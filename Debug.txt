@@ -1,0 +1,6 @@
+- in BattleTech_Data\StreamAssets\data\debug\settings.json
+  - Add "testToolsEnabled" : true,
+  - Set "disableSplashScreens": false,
+  - Set "disableIntroMovie": false,
+- To auto-start from DotTrace, add file `steam_appid.txt` to Battletech dir, with content:
+  - 637090
