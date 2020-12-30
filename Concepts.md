@@ -14,3 +14,10 @@ Allow use of airstrikes, artillery, etc from a command bar
 
 Allow injection of tutorial content like in the EW gear
 
+### Transit Authority
+
+Allow items that take up crits, weight? but when within X meters spawns a unit of battlearmor?
+
+### BV Balancing for Lances
+
+Lances are calculated through HBS values, would be nice to use BV instead
