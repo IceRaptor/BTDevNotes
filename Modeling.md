@@ -8,21 +8,37 @@ under 50k or it spilts
 chrMdlVhcle == model/mesh
 chrMatVhcle == material
 
+Make lenses with no emission, but a paint-dot on their tips with full occlusion for a 'shine'
+
+# Requests
+
+BD: Brutus, Manteuffel, and especially the Gladius 
+Raza: Plainsman/Minion/Regulator/Musketeer
+Either the Regulator or the Musketeer would be the preferred one since both have
+
 # Transient's Workflow
 	
 1. Create model
 1. Export model as FBX from blender
-1. Texture / UVMap model
+	1. UVMap model (smartUV + 0.10 islands)
+	2. Vertex color model (use paint-> all to speed up)
+	3. Export object only, no animation
+	4. Scale model to ~ 8.5m long (for tanks)
+	5. Make sure to apply all transforms
+	6. Unity works with +z forward, +y upward by default
+	7. Center unit on xyz origin. Treads slightly below x plane, slightly forward on Y. Blender numpad 7 gives you the expected view in Unity
+	7. Make sure to apply all transforms!
 1. Export textures (5 types; )
 1. In UnityEditor, create new folder for model (lower-case name, i.e. ontosheat)
 1. Create new GameObject named chrprfvhcl_<mymodel>
 1. Drag GO into your folder; should create a blue cube
-1. Click on the blue cube, go to Asset Labels in the lower left, click new and name it the same as your chrprfvhcl<mymodel>
+	1. Click on the blue cube, go to Asset Labels in the lower left, click new and name it the same as your chrprfvhcl<mymodel>
 1. In UE, right-click to 'Import New Asset', include your FBX
 	1. Note: Name should be chrMdlVhcl_<mymodel>
-	2. Meshes of > 50k will split; keep verts under 50k
-1. In UE, game object should be linked to an assetbundle named chrmdlvhcl_<mymodel>
-	1. chrmdlvhcl_<mymodel should be linked to an assetbundle named <mymodel>parts
+	1. Meshes of > 50k will split; keep verts under 50k
+	1. Make sure to uncheck 'use file scale'; if checked the scale may be off
+	1. Orientation in the scene does not matter; orientation in the mesh preview *does*
+	1. FBX should be linked to an assetbundle named <mymodel>_parts
 1. In UE, build your asset bundles
 1. Uncompress assetbundle from unity
 1. Import APC assets
