@@ -1,8 +1,7 @@
 # BT Developer Notes
 This is my collection of random notes for use when modding the [HBS BattleTech](http://battletechgame.com/) game. I doubt anybody else would find them interesting.
 
-
-under 50k or it spilts
+under 50k or it splits
 100k total on import
 
 chrMdlVhcle == model/mesh
@@ -10,11 +9,66 @@ chrMatVhcle == material
 
 Make lenses with no emission, but a paint-dot on their tips with full occlusion for a 'shine'
 
+* Substance doesn't an emissive layer by default; you need to do so yourself
+* Need to set Min/Max occlusion distance to 0.004 / 0.01 in AO bake
+* Need to set color source = Vertex colors in ID bake
+
+Unit color mask
+======
+RGB mask, set a black fill as the base so it comes out correctly
+- Primary color is Green channel
+- Secondary color is Blue channel
+- Accent color is Red channel
+  
+== Zhukov def ==
+Vehicles
+
+	"HardpointDataDefID": "hardpointdatadef_shamash",
+	"PrefabIdentifier": "chrprfvhcl_shamash",
+	"PrefabBase": "shamash",
+	
+VTOLS
+
+	"HardpointDataDefID": "hardpointdatadef_rakirov",
+	"PrefabIdentifier": "rakirov_body",
+	"PrefabBase": "rakirov",
+	
 # Requests
 
-BD: Brutus, Manteuffel, and especially the Gladius 
-Raza: Plainsman/Minion/Regulator/Musketeer
+BD: 
+* https://www.sarna.net/wiki/Dixon_(law_enforcement)
+
+Carriers in need of true models:
+
+AC2/LBX2/Rifles
+AC20
+Thunderbolt5/10
+Med Laser
+Mortar
+Flamer
+Mixed LRM+Thunderbolt
+There's a rough list of carriers that aren't just missile boxes
+
+Raza: 
+* https://www.sarna.net/wiki/Plainsman
+* https://www.sarna.net/wiki/Minion
+* https://www.sarna.net/wiki/Musketeer
+
+Shade:
+* https://www.sarna.net/wiki/Dig_King#/media/File%3ADig_Lord.jpg
+
+Denadan
+* https://cdn.discordapp.com/attachments/565136849752948736/806814292203667456/157555856919351749.png
+
 Either the Regulator or the Musketeer would be the preferred one since both have
+
+Interesting VTOLs:  
+
+* https://www.sarna.net/wiki/Kamakiri
+* https://www.sarna.net/wiki/Aeron
+* https://www.sarna.net/wiki/Anhur
+* https://www.sarna.net/wiki/Gossamer
+* https://www.sarna.net/wiki/Peacekeeper_(VTOL)
 
 # Transient's Workflow
 	
