@@ -16,8 +16,8 @@ Make lenses with no emission, but a paint-dot on their tips with full occlusion 
 Unit color mask
 ======
 RGB mask, set a black fill as the base so it comes out correctly
-- Primary color is Green channel
-- Secondary color is Blue channel
+- Primary color is Blue channel
+- Secondary color is Green channel
 - Accent color is Red channel
   
 == Zhukov def ==
@@ -36,15 +36,9 @@ VTOLS
 # Requests
 
 BD: 
-* https://www.sarna.net/wiki/Dixon_(law_enforcement)
 
 Carriers in need of true models:
 
-AC2/LBX2/Rifles
-AC20
-Thunderbolt5/10
-Med Laser
-Mortar
 Flamer
 Mixed LRM+Thunderbolt
 There's a rough list of carriers that aren't just missile boxes
@@ -53,8 +47,10 @@ Raza:
 * https://www.sarna.net/wiki/Plainsman
 * https://www.sarna.net/wiki/Minion
 * https://www.sarna.net/wiki/Musketeer
+* https://www.sarna.net/wiki/Tokugawa
 
 Shade:
+* Loki loves melee things, so a hatchet would work well here
 * https://www.sarna.net/wiki/Dig_King#/media/File%3ADig_Lord.jpg
 
 Denadan
