@@ -43,18 +43,25 @@ Flamer
 Mixed LRM+Thunderbolt
 There's a rough list of carriers that aren't just missile boxes
 
+https://cfw.sarna.net/wiki/images/7/72/LB-X_Carrier.jpg
+
 Raza: 
-* https://www.sarna.net/wiki/Plainsman
 * https://www.sarna.net/wiki/Minion
 * https://www.sarna.net/wiki/Musketeer
-* https://www.sarna.net/wiki/Tokugawa
+
+Haree:
+* https://cfw.sarna.net/wiki/images/d/db/3039_SturmFeur.jpg
+* Prowler
+* Harasser
+* Pike (There is one that needs 3 barrels, and one that needs 2)
 
 Shade:
 * Loki loves melee things, so a hatchet would work well here
 * https://www.sarna.net/wiki/Dig_King#/media/File%3ADig_Lord.jpg
-
-Denadan
-* https://cdn.discordapp.com/attachments/565136849752948736/806814292203667456/157555856919351749.png
+* https://sc01.alicdn.com/kf/HTB1r.jWKVXXXXb9XpXXq6xXFXXXi/Rock-Rotary-Drill-Head.jpg_350x350.jpg
+* https://mining.komatsu/images/default-source/product-images/underground/room-and-pillar-entry-development/gpl5755.jpg?sfvrsn=40740a6b_48
+* https://farm3.staticflickr.com/2905/14353629754_58dd5e443e_b.jpg
+http://www.saltassociation.co.uk/wp/wp-content/uploads/continuousdigger_lge.jpg
 
 Either the Regulator or the Musketeer would be the preferred one since both have
 
