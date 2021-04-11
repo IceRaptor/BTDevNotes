@@ -50,10 +50,10 @@ Raza:
 * https://www.sarna.net/wiki/Musketeer
 
 Haree:
-* https://cfw.sarna.net/wiki/images/d/db/3039_SturmFeur.jpg
-* Prowler
-* Harasser
-* Pike (There is one that needs 3 barrels, and one that needs 2)
+* https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
+* https://www.sarna.net/wiki/Harasser
+* https://www.sarna.net/wiki/Pike_(combat_vehicle)
+	**  (There is one that needs 3 barrels, and one that needs 2)
 
 Shade:
 * Loki loves melee things, so a hatchet would work well here
