@@ -7,6 +7,19 @@ This is my collection of random notes for use when modding the [HBS BattleTech](
   * The import model's vertex count needs to be 50k or less. Unity's import will increase the vert count slightly, and any model > 55k gets split by Unity 5 into multiple meshes. BTG doesn't support multiple meshes (for vehicles) so you're stuck with ~ 45-50k.
   * The Unity scene we have requires Unity 5.5. Don't use Unity 2018.4 (what BTG uses) because the export will break.
   * The model/mesh is starts with `chrMdlVhcle`. The materials start with `chrMatVhcle`  
+  
+The only real parts you need are the following:  
+* Center Torso, 
+* Pelvis, 
+* Upper arm (left and right), 
+* forearm (left and right), 
+* thigh (left and right), 
+* calf (left and right), 
+* feet (left and right).  
+* cockpit 
+
+I always put a cockpit object in my mechs now, even if it is a invisible object hidden in the torso.  The cockpit saves a ton of headache because your CT will align properly.  Without it you have to do some funky alignment stuff for the CT.
+I almost always merge my RT/LT into the CT.  Hips to the Pelvis and shoulders to the upperarm.
 
 ## Texturing Notes
 
@@ -64,10 +77,20 @@ Haree:
 Shade:
 * Loki loves melee things, so a hatchet would work well here
 * https://www.sarna.net/wiki/Dig_King#/media/File%3ADig_Lord.jpg
+* https://db4sgowjqfwig.cloudfront.net/images/636708/miningmek.gif
+* https://s3.amazonaws.com/duxsite-battletech/87a2bcb6b597961044eddad891b7b10e3c79f6b30b1be3a26a4a77d32e41fd12u71.png
+* https://www.ironwindmetals.com/images/com_hikashop/upload/thumbnails/300x300c000000/btindustrialmech/20-387.JPG
+* https://cdnb.artstation.com/p/assets/images/images/019/977/873/large/longque-chen-timber-mech-17.jpg?1565822495
+* http://2.bp.blogspot.com/-RDbza10lBYM/TmJIxj0LR6I/AAAAAAAAAz4/gwxk3HYvVno/s1600/IMECminer01.JPG1
+* https://pbs.twimg.com/media/CHFuDvCWcAAaO8C.jpg
+
+
 * https://sc01.alicdn.com/kf/HTB1r.jWKVXXXXb9XpXXq6xXFXXXi/Rock-Rotary-Drill-Head.jpg_350x350.jpg
 * https://mining.komatsu/images/default-source/product-images/underground/room-and-pillar-entry-development/gpl5755.jpg?sfvrsn=40740a6b_48
 * https://farm3.staticflickr.com/2905/14353629754_58dd5e443e_b.jpg
-http://www.saltassociation.co.uk/wp/wp-content/uploads/continuousdigger_lge.jpg
+* http://www.saltassociation.co.uk/wp/wp-content/uploads/continuousdigger_lge.jpg
+
+
 
 Either the Regulator or the Musketeer would be the preferred one since both have
 
