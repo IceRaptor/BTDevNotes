@@ -21,6 +21,8 @@ The only real parts you need are the following:
 I always put a cockpit object in my mechs now, even if it is a invisible object hidden in the torso.  The cockpit saves a ton of headache because your CT will align properly.  Without it you have to do some funky alignment stuff for the CT.
 I almost always merge my RT/LT into the CT.  Hips to the Pelvis and shoulders to the upperarm.
 
+Ctrl+Shift+U to hide / show screen in system
+
 ## Texturing Notes
 
 Make lenses with no emission, but a paint-dot on their tips with full occlusion for a 'shine'
@@ -67,6 +69,7 @@ https://cfw.sarna.net/wiki/images/7/72/LB-X_Carrier.jpg
 Raza: 
 * https://www.sarna.net/wiki/Minion
 * https://www.sarna.net/wiki/Musketeer
+* https://www.sarna.net/wiki/File:Maultier.JPG
 
 Haree:
 * https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
@@ -90,6 +93,9 @@ Shade:
 * https://farm3.staticflickr.com/2905/14353629754_58dd5e443e_b.jpg
 * http://www.saltassociation.co.uk/wp/wp-content/uploads/continuousdigger_lge.jpg
 
+ME:  
+* Viking Mech - https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png
+* https://www.sarna.net/wiki/File:3055u_Gunslinger.jpg
 
 
 Either the Regulator or the Musketeer would be the preferred one since both have
@@ -101,6 +107,7 @@ Interesting VTOLs:
 * https://www.sarna.net/wiki/Anhur
 * https://www.sarna.net/wiki/Gossamer
 * https://www.sarna.net/wiki/Peacekeeper_(VTOL)
+* Robotech Beta fighter - https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ad730f9f-28e3-4bef-a04c-6fcc3a4227ba/d6q6jwe-ac16c175-748c-44cc-88f7-fc1064c81c4b.jpg/v1/fill/w_1024,h_579,q_75,strp/shadow_beta_fighter_by_kevarin-d6q6jwe.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl0sIm9iaiI6W1t7InBhdGgiOiIvZi9hZDczMGY5Zi0yOGUzLTRiZWYtYTA0Yy02ZmNjM2E0MjI3YmEvZDZxNmp3ZS1hYzE2YzE3NS03NDhjLTQ0Y2MtODhmNy1mYzEwNjRjODFjNGIuanBnIiwid2lkdGgiOiI8PTEwMjQiLCJoZWlnaHQiOiI8PTU3OSJ9XV19.jaId31uMnJB3DhYnqqptxjCW70zpQEC2X5I1vJHhovg
 
 # Import Workflows
 
@@ -108,6 +115,64 @@ Everybody is different, but it seems. Some miscellaneous notes:
 
 * Always lowercase the name
 * Avoid name collisions where possible
+
+# Mech Import Workflows
+
+Notes:
+- Make sure you use the 1.6 bundles from BT, not the current bundles. UABE can't export textures on current bundles, and will corrupt them when you make assets.
+- Weapons get only textures, no masks
+- Mechs gets 6 masks
+- You need to blank any parts you're not using, using a tiny mesh
+- hardpoints
+  - make sure to rename any you swap
+  - make sure you replace the equivalent weapon
+- make sure to include a cockpit, hidden in CT. Prevents combat drop alignment issues
+  
+- Armature tab on export; enable ''only deform bones', disable 'add leaf bones'
+- Apply armature modifier to all parts?
+- Apply rest pose to animation before export/
+- In BTDebug, in Mechbay, search for MechParent_0 to find the first mechbay display. Can help identify not loading issues if the chrPrf gameObject doesn't appear under it
+
+- buy blender exporter for FBX - http://www.mesh-online.net/fbx.html / https://blendermarket.com/products/better-fbx-importer--exporter
+- Re-parent meshes under armature
+- For each mesh part, add a vertex group with the *exact* same name as the bone you want to connect to
+- For each mesh part, add an armature modifier targeting the armature + vertex group
+- Select mesh part in object mode, go to edit mode, select all, click vertex group tab, click 'assign' to map very mesh to the vertex group
+
+- Export settings
+- Selected Objects only
+- FBX_2018_00 works fine
+- Only Deform Bones
+- No animations
+- Apply modifiers
+- Include armature deform modifier
+
+- Disable 'Reset Mesh Origin' to have weapons respect the cursor placement
+
+- Weapons placement:
+-   Set origin to bone end
+-   Position weapons where you want
+-   Apply transforms
+-   Set object origin to the cursor on the bone end
+-   Rotate objects x+180, z+90
+  
+- Torso dimensions in unity should be around center: [ 0.2, 1.5, -0.5], Extents: [ 3.0, 3.0, 3.5]
+- Shortcuts: Ctrl + Shift + U -> combat, free camera
+- Ctrl + U -> mechbay hide UI
+
+- Add to ME Settings.json this to enable prefab logging:
+- 	"BetterLog": {
+		"Level" : "Debug"
+	}
+
+- Mechlab sorts by inventory size *first*, and finds the first prefab that matches
+	+ I believe this also uses natural language sorting
+	+ Mechlab is often *fucked* but generally drops in combat work fine
+	+ Sort is defined in https://github.com/BattletechModders/MechEngineer/blob/4a4f9f775ea69cddf76cd82994ce1f52ce698f96/source/Features/HardpointFix/WeaponComponentPrefabCalculator.cs#L25
+
+- Remember UI is z forward, y up
+- Object seems to align to its armature
+- https://github.com/egtwobits/mesh_mesh_align_plus
 
 # Regular Vehicle Import Workflow
 
