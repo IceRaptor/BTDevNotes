@@ -180,6 +180,10 @@ Notes:
 
 - You MUST untick 'Always Deform' under advanced in the Skin modifier, when changing the pivot location. You MUST then re-enable it, or the mechbay will deform. Off = combat, on = mechbay. you MUST export the parts with it on!
 
+- blanks work on the hardpoint numeric location... blank_bh4 replaces any _bh4 hardpoint that isn't defined. 
+- ME sorts hardpoints by inventory crit size first, then type, when defaulting. So a LRM15 will look for lrm20 -> lrm15 -> lrm10 -> srm6 -> lrm5 -> srm4 -> srm2 when calculating prefabs to pull
+- ME completely ignores location information 
+
 # Regular Vehicle Import Workflow
 
 Largely from Transient and Shade. DO NOT COVER VTOLS
