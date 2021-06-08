@@ -174,6 +174,12 @@ Notes:
 - Object seems to align to its armature
 - https://github.com/egtwobits/mesh_mesh_align_plus
 
+- For mechbay, aligning pivot to joint and then rotating the pivot seems to work fine.
+- This doesn't seem to work as nicely in combat, where the objects tend to get shifted. 
+- Mechbay seems to ONLY care about alignment? HOW?
+
+- You MUST untick 'Always Deform' under advanced in the Skin modifier, when changing the pivot location. You MUST then re-enable it, or the mechbay will deform. Off = combat, on = mechbay. you MUST export the parts with it on!
+
 # Regular Vehicle Import Workflow
 
 Largely from Transient and Shade. DO NOT COVER VTOLS
