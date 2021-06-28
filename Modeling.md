@@ -9,14 +9,14 @@ This is my collection of random notes for use when modding the [HBS BattleTech](
   * The model/mesh is starts with `chrMdlVhcle`. The materials start with `chrMatVhcle`  
   
 The only real parts you need are the following:  
-* Center Torso, 
-* Pelvis, 
-* Upper arm (left and right), 
-* forearm (left and right), 
-* thigh (left and right), 
-* calf (left and right), 
-* feet (left and right).  
-* cockpit 
+* Center Torso => mechname_centre_torso
+* Pelvis => mechname_centre_torso_pelvis
+* Upper arm (left and right) => mechname_left_arm_upperarm, mechname_right_arm_upperarm
+* forearm (left and right) => mechname_left_arm_forearm, mechname_right_arm_forearm
+* thigh (left and right) => mechname_left_leg_thigh, mechname_right_leg_thigh
+* calf (left and right) => mechname_left_leg_calf, mechname_right_leg_calf
+* feet (left and right) => mechname_left_leg_foot, mechname_right_leg_foot
+* cockpit  => mechname_cockpit
 
 I always put a cockpit object in my mechs now, even if it is a invisible object hidden in the torso.  The cockpit saves a ton of headache because your CT will align properly.  Without it you have to do some funky alignment stuff for the CT.
 I almost always merge my RT/LT into the CT.  Hips to the Pelvis and shoulders to the upperarm.
@@ -74,24 +74,6 @@ Raza:
 Haree:
 * https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
 * https://www.sarna.net/wiki/Harasser
-* https://www.sarna.net/wiki/Pike_(combat_vehicle)
-	**  (There is one that needs 3 barrels, and one that needs 2)
-
-Shade:
-* Loki loves melee things, so a hatchet would work well here
-* https://www.sarna.net/wiki/Dig_King#/media/File%3ADig_Lord.jpg
-* https://db4sgowjqfwig.cloudfront.net/images/636708/miningmek.gif
-* https://s3.amazonaws.com/duxsite-battletech/87a2bcb6b597961044eddad891b7b10e3c79f6b30b1be3a26a4a77d32e41fd12u71.png
-* https://www.ironwindmetals.com/images/com_hikashop/upload/thumbnails/300x300c000000/btindustrialmech/20-387.JPG
-* https://cdnb.artstation.com/p/assets/images/images/019/977/873/large/longque-chen-timber-mech-17.jpg?1565822495
-* http://2.bp.blogspot.com/-RDbza10lBYM/TmJIxj0LR6I/AAAAAAAAAz4/gwxk3HYvVno/s1600/IMECminer01.JPG1
-* https://pbs.twimg.com/media/CHFuDvCWcAAaO8C.jpg
-
-
-* https://sc01.alicdn.com/kf/HTB1r.jWKVXXXXb9XpXXq6xXFXXXi/Rock-Rotary-Drill-Head.jpg_350x350.jpg
-* https://mining.komatsu/images/default-source/product-images/underground/room-and-pillar-entry-development/gpl5755.jpg?sfvrsn=40740a6b_48
-* https://farm3.staticflickr.com/2905/14353629754_58dd5e443e_b.jpg
-* http://www.saltassociation.co.uk/wp/wp-content/uploads/continuousdigger_lge.jpg
 
 ME:  
 * Viking Mech - https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png
@@ -108,6 +90,8 @@ Interesting VTOLs:
 * https://www.sarna.net/wiki/Gossamer
 * https://www.sarna.net/wiki/Peacekeeper_(VTOL)
 * Robotech Beta fighter - https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ad730f9f-28e3-4bef-a04c-6fcc3a4227ba/d6q6jwe-ac16c175-748c-44cc-88f7-fc1064c81c4b.jpg/v1/fill/w_1024,h_579,q_75,strp/shadow_beta_fighter_by_kevarin-d6q6jwe.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl0sIm9iaiI6W1t7InBhdGgiOiIvZi9hZDczMGY5Zi0yOGUzLTRiZWYtYTA0Yy02ZmNjM2E0MjI3YmEvZDZxNmp3ZS1hYzE2YzE3NS03NDhjLTQ0Y2MtODhmNy1mYzEwNjRjODFjNGIuanBnIiwid2lkdGgiOiI8PTEwMjQiLCJoZWlnaHQiOiI8PTU3OSJ9XV19.jaId31uMnJB3DhYnqqptxjCW70zpQEC2X5I1vJHhovg
+
+Project Zhukov - https://drive.google.com/file/d/1nZEhDHVnn-dLR8CmwTFdjsNj4hHu4P_M/view
 
 # Import Workflows
 
@@ -183,6 +167,8 @@ Notes:
 - blanks work on the hardpoint numeric location... blank_bh4 replaces any _bh4 hardpoint that isn't defined. 
 - ME sorts hardpoints by inventory crit size first, then type, when defaulting. So a LRM15 will look for lrm20 -> lrm15 -> lrm10 -> srm6 -> lrm5 -> srm4 -> srm2 when calculating prefabs to pull
 - ME completely ignores location information 
+
+- Do not call meshes chrprfweap_ ; this overwrites the GO in BIMP and causes a bundle load issue.
 
 # Regular Vehicle Import Workflow
 
@@ -300,6 +286,7 @@ Download via Unity Hub [https://store.unity.com/download-nuo]
 	6. Save as `unity/chrprfvhcl_mymodel_imported_manifest_textured_ready`
 3. File -> Close
 4. File -> Compress
+
 	1. Select `unity/chrprfvhcl_mymodel_imported_manifest_textured_ready`
 	2. Make sure 'LZ4' is selected (should be default)
 	2. Click 'Ok'
@@ -315,6 +302,7 @@ Download via Unity Hub [https://store.unity.com/download-nuo]
 ```json
         { "Type": "Prefab", "Path": "assets/character/vehicle/prefabs/chrprfvhcl_mymodel.prefab", "AssetBundleName": "chrprfvhcl_mymodel" },
         { "Type": "Prefab", "Path": "assets/character/vehicle/prefabs/weapons/mymodel/chrprfweap_mymodel_turret_generic_eh1.prefab", "AssetBundleName": "chrprfvhcl_mymodel" },
+
 ```
 	
 1. Create `unity/<mymodel>_0/hardpointdatadef_mymodel`

@@ -1,3 +1,6 @@
+To Investigate
+* Use new CSProj format - https://caraulean.com/2018/migrating-to-new-csproj-format/. Mentioned by CptMoore.
+
 Modding Concepts
 
 ### New Salvage Model
