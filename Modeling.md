@@ -333,7 +333,38 @@ There may be positioning issues with the model. If so, adjust the `_cu` transfor
 
 __Step 6: Dynamic Hardpoints__
 
-Loreum ipsum
+HBS expects models to have different models it can map onto the a weapon slot. This process maps a prefab onto a hardpoint id, using some magic in the name of the prefab. For instance, `chrPrfWeap_cugunslinger_leftarm_gauss_bh1` tells the game engine that it's a ballistic (`_b`) in hardpoint 1 (`h1`), it looks like a gauss (`_gauss`) and it's in the left arm (`_leftarm`).
+
+The different weapon types are:
+
+* `_eh` - energy
+* `_bh` - ballistic
+* `_mh` - missile
+* `_ah` - auxillary (ams, etc)
+
+The model types that are exposed are:
+
+* gauss
+* laser
+* ppc
+* lrmX
+* mg
+* srmX
+* blank
+* TODO
+
+Inside the UnityEditor, create a new GameObject in the hierarchy window. It's name must start with `chrprfweap` (case matters!) and reflect the location, type, and hardpoint type. For a left-torso laser hardpoint, we'd use  `chrprfweap_cuYOURMECH_lefttorso_laser_eh1`. This GameObject's transform MUST be zeroed, and you shouldn't change this.
+
+Inside this parent, drag your mesh under it to create a new child GameObject. Add the SkinnedMeshRenderer component to the child, but DO NOT associate it with a root bone. To adjust the position of the mesh, you will adjust the transform on the child. To make things sane, we'll use an example from the CU Gunslinger - with 
+
+parent: `chrprfweap_cugunslinger_lefttorso_lrm5_mh3`
+child: `gunslinger_lefttorso_lrm5_mh1`
+
+Copy past your parent GO into the location that will mount the weapon. Here's the breakdown of locations by bind-bone:
+
+* `j_Root/j_Pelvis/j_Pitch/j_Spine/j_Spine1/j_Spine2/` - used for all torsos
+* `j_Root/j_Pelvis/j_Pitch/j_Spine/j_Spine1/j_Spine2/j_LClavicle/j_LUpperArm/j_LForearm` - used for arm mounts
+* `j_Root/j_Pelvis/j_LHip/j_LThigh/j_LCalf/`- used for leg mounts
 
 
 ## Legacy Workflow 
