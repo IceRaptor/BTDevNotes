@@ -232,7 +232,7 @@ These new `_cu` 'bones' are what we'll target. CustomUnits will add these new tr
 
 (!) You can name these whatever you like, the name isn't important. I chose this idiom to let me easily understand the parent bone relationship.
 
-__Step 3: Meshes and Materials__
+__Step 4: Meshes and Materials__
 
 Create the following new folders in the project view, for your mech:
 
@@ -250,7 +250,91 @@ If you have camo masks, create one material for each mask. It should be name pre
 
 Go back to your model's mesh/ hierarchy. Click-drag the meshes into the relevant section (i.e. the head into ``meshes/mesh_Head/Head_Whole`). For each part, right-click and choose 'Unpack Prefab Completely'. Once all your parts are imported, select them all. In the Inspector window, remove the `Mesh Filter` component by clicking the gear icon on the far right. Next, click 'Add Component' and add a `Skinned Mesh Renderer` component. Click the i button next to the `Materials/element 0` and choose the material you created above.
 
-Note the 'mesh' and 'Root Bone' fields. CustomUnits works by finding all Skinned Mesh Render components, and trying to match their `Root Bone` with the same name on the parent skeleton. 
+Note the 'Mesh' and 'Root Bone' fields. CustomUnits works its magic by finding all Skinned Mesh Render components, and trying to match their `Root Bone` with the same name on the parent skeleton. It will replace the mesh found on the parent with the mesh on the CU mech if the bones match. If the SkinnedMeshRenderer bone doesn't match an existing bone on the parent, it will create it and copy the transform information. By creating the `_cu` transforms you're creating new bones that will additively map to the existing parent skeleton. 
+
+As you are not limited to the bones of the parent, you can import meshes beyond the basic ones referenced above. Keep them in the mesh/ area closest to where they will be mounted. If you add new meshes to the left arm, drop the mesh in `mesh/mesh_LArm/LArm_whole`. 
+
+(!) HBS splits it's models into a left, center, and right torso. This isn't necessary, you can provide a single centre_torso mesh and it will work fine. In this case (which I recommend), just have empty `LTorso_dmg` and `LTorso_whole` paths. 
+
+__Step 4b: Animation Tests__
+
+Once your meshes are mapped to the parent's skeleton, you can preview the animations and see how they should look in game. Disable all of the parent meshes (i.e. chrPrfMech_battlemasterBase-001/mesh/ in the hierarchy), and you should be left with just your model's meshes. Go to the animation tab, choose an animation, and hit play. In particular try the __MoveCoreRunXXX___ and ___MoveCoreWalkXXX___ animations to see how it will look while moving.
+
+Adjust the `_cu` transform positions until you get the animations looking 'good enough'. People will give your models some leeway, so don't try to get it too perfect here. Once you are satisfied, go to the next step.
+
+__Step 4c: Skeleton Copy and Damage Meshes__
+
+Your mech's `bones/` node should still be empty. Click the parent's `j_Root` bone, copy it, and paste it under your mech's `bones/` node. This should transplant the parent structure to your actual copy. Zero out the new j_Root transform values; Unity will try to make it relative to the copied location which is not what we want. 
+
+Unfortunately this only copies the transform information, but all the meshes are still pointing to the parent transforms. Go into each SkinnedMeshRender node, click the I button next to 'Root Bone', and change it from the parent bone to your mech's bone. There *should* be only two of the same type. When you update it, the mesh should jump from the parent's location, to your mech's location.
+
+Once you've mapped everything, you need to update the `_dmg` directories. Copy the objects from the `_whole` directory  and move the copies into the `_dmg` directory. You can keep everything the same if you want, or strip off certain parts. You can use different meshes for `_dmg`, or different materials. This latter approach is what HBS does, with custom damaged meshes and materials used when a part is destroyed.
+
+Once you have all SkinnedMeshRenderer components attached to `_cu` bones, manipulate the `_cu` bones to get the alignment you want in the UnityEditor. Once you're happy with the results, move on to the next step.
+
+__Step 5: Export and CustomRep__
+
+Drag your prefab (i.e. `chrprfmech_cuelementalbase-001`) from the hierarchy window to the project window, at `Assets/character/mech/prefabs`. Click the prefab in the project pane, then under the bottom right window where it says AssetBundle click the dropdown. Choose new, and supply the *exact* name of the prefab again. In my case, that is `chrprfmech_cuelementalbase-001`. Now right-click in the project viewport, and choose 'Build Asset Bundle'. This will take ~ 30s during which time the editor will be unresponsive. When done, the prefab in the hierarchy will be blue; this indicates it's now a packaged prefab. You will need to click it, and choose 'Unpack Prefab Completely', in order to edit it in the future.
+
+Open a File Explorer window, and navigate to your Unity project area. It's probably something like `Users\<USERNAME>\Documents\Unity\BTG Projects\CU Mech Imports\Assets\AssetsBundles`, but your location may vary. Inside that folder you'll see your packaged AssetBundle (i.e. `chrprfmech_cuelementalbase-001`) along with a .manifest, .manifest.meta, and .meta file. Ignore those, and copy only the assetbundle to `BATTLETECH\Mods\CAB-CU\assetbundles` in your BattleTech game install folder.   
+  
+This is your local copy of the CustomUnits CAB (Community Asset Bundle). The CAB is a collection of the all the units created by folks in the community, and contains the Unity resources (assetbundles) along with resources specific to the HBS game. A model requires 4 edits to the CAB:  
+  
+  * An assetbundle (in CAB-CU/assetbundles)
+  * A hardpointDef (in CAB-CU/hardpoints)
+  * A customRepresentation (in CAB-CU/representations)
+  * Manifest data (in CAB-CU/mod.json)
+  
+The mod.json edits are the easiest. Open the file, and you'll see many lines like:  
+  
+```
+		{ "Type": "Prefab", "Path": "assets/character/mech/prefabs/chrprfmech_cugunslingerbase-001.prefab", "AssetBundleName": "chrprfmech_cugunslingerbase-001" },
+		
+		{ "Type": "Prefab", "Path": "assets/character/mech/prefabs/chrprfweap_cugunslinger_leftarm_ac20_bh1.prefab", "AssetBundleName": "chrprfmech_cugunslingerbase-001" },
+		{ "Type": "Prefab", "Path": "assets/character/mech/prefabs/chrprfweap_cugunslinger_leftarm_gauss_bh1.prefab", "AssetBundleName": "chrprfmech_cugunslingerbase-001" },
+		{ "Type": "Prefab", "Path": "assets/character/mech/prefabs/chrprfweap_cugunslinger_leftarm_laser_eh1.prefab", "AssetBundleName": "chrprfmech_cugunslingerbase-001" },
+		{ "Type": "Prefab", "Path": "assets/character/mech/prefabs/chrprfweap_cugunslinger_leftarm_laser_eh2.prefab", "AssetBundleName": "chrprfmech_cugunslingerbase-001" },
+		{ "Type": "Prefab", "Path": "assets/character/mech/prefabs/chrprfweap_cugunslinger_leftarm_laser_eh3.prefab", "AssetBundleName": "chrprfmech_cugunslingerbase-001" },
+		{ "Type": "Prefab", "Path": "assets/character/mech/prefabs/chrprfweap_cugunslinger_leftarm_laser_eh4.prefab", "AssetBundleName": "chrprfmech_cugunslingerbase-001" },  
+		...
+```
+
+
+The first line imports your assetbundle that we just created. Note that `path` element matches the path in the Unity Editor, NOT the file system. The `AssetBundleName` instead matches the filesystem path, and which is inherently referenced by an AssetBundle type defined elsewhere in the file.  
+  
+The other lines are _dynamic weapon prefabs_. We'll cover those later, but it's the same idea as your mech model. A weapon prefab is just another package, created the same way in the editor, that we can import via this file. 
+
+The customRepresentation for plain mechs is straightforward; open `chrprfmech_cugunslingerbase-001.json` to see what I mean. The donor mech preab should in the `SourcePrefabIdentifier` element, while the `Destructibles` paths should reflect what you see in the Unity Editor hierarchy. These paths are the linkage between CustomUnits and your Unity prefab, so make sure they are correct. If you followed the guide so far, the only thing you need to change is your `Id` and `PrefabBase` attributes to reflect your design. Maybe `SourcePrefabIdentifier` if you used something other than the Battlemaster as a parent.
+
+Finally, the hardpoint file maps dynamic weapons to locations and many other effects in game. Open `hardpointdatadef_cugunslinger.json` to see the structure. For all files, you shoul have an empty `HardpointData` section. This is the default HBS data structure that KMiSSiON overwrites with custom logic.  
+  
+`CustomHardpoints` defines how prefabs are mounted for dynamic matching. Because we're ignoring that for the moment, you'll want to update the `ID` value and have an empty CustomHardpoints block like so:
+
+```
+  "CustomHardpoints": {
+    "prefabs": [
+    ],
+    "aliases": {
+    }
+  },
+```
+
+You're now ready to try the unit out in game. If you're using KMiSSiON's CBDebugEnvironment, go to `BATTLETECH\Mods\CACDebugContent` and find a chassis that roughly matches what you're building. It's easy enough to use the Gunslinger, so open `BATTLETECH\Mods\CACDebugContent\chassis\chassisdef_gunslinger_GUN-1ERD.json`. You need to change the `HardpointDataDefID`, `PrefabIdentifier`, and `PrefabBase` values to your new mech. For instance, where's what I used for my elemental:  
+  
+```
+    "HardpointDataDefID": "hardpointdatadef_cuelemental",
+    "PrefabIdentifier": "chrprfmech_cuelementalbase-001",
+    "PrefabBase": "cuelemental",
+```
+
+Once the file is saved, load up HBS BT, go into Skirmish and drop with the Gunslinger. It should new be using your custom model.
+
+There may be positioning issues with the model. If so, adjust the `_cu` transform positions and re-package your AssetBundle. I've found it safest to delete the prefab from the Project window (at `Assets\character\mech\prefabs`) first - this will turn the prefab red in the Hierarchy window (if you didn't already unpack it). Drag it back into the project window at `\prefabs`, re-associate it with the assetbundle name, and rebuild the asset bundle. Copy it over, and try again. And again, and again!
+
+__Step 6: Dynamic Hardpoints__
+
+Loreum ipsum
+
 
 ## Legacy Workflow 
 
