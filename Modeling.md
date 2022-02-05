@@ -333,6 +333,8 @@ There may be positioning issues with the model. If so, adjust the `_cu` transfor
 
 __Step 6: Dynamic Hardpoints__
 
+(!) CAUTION: This is currently speculative, I've not done an actual import with these yet. IMPORTER BEWARE
+
 HBS expects models to have different models it can map onto the a weapon slot. This process maps a prefab onto a hardpoint id, using some magic in the name of the prefab. For instance, `chrPrfWeap_cugunslinger_leftarm_gauss_bh1` tells the game engine that it's a ballistic (`_b`) in hardpoint 1 (`h1`), it looks like a gauss (`_gauss`) and it's in the left arm (`_leftarm`).
 
 The different weapon types are:
