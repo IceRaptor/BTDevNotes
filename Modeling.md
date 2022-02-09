@@ -119,6 +119,16 @@ KMission has created a custom import workflow that is powered by his [CustomUnit
 -- special conventions
 -- headlights
 
+#### Animations
+
+- CU animator will set 'in_battle', 'charge', 'forward' animator properties
+- Animators have to be defined in json, like "Animators": [ "j_Body","LB","LF","RB","RF" ], 
+- Animators should be attached to objects with distinct names. Don't use `body`!
+- 
+in_battle - boolean
+charge - trigger
+forward - float
+
 #### Twist Animations
 TwistAnimators - it is different set of animators which can be triggered independently they are triggering next animator values
 StartRandomIdle - bool
@@ -141,14 +151,9 @@ you can look at yellowjacket twist animator implementation for inspiration
 - SMR `Root Bone` needs to reflect the attach heirarchy under bones/
 - i.e. mesh/strix_destructable/StrixCutUp has a root bone of bones/j_Root/j_Body/normal_h/normal_v/normal/StrixCutUp
 - Rename the bones heirarchy to match new model
-- CU animator will set 'in_battle', 'charge', 'forward' animator properties
-- Animators have to be defined in json, like "Animators": [ "j_Body","LB","LF","RB","RF" ], 
-- Animators should be attached to objects with distinct names. Don't use `body`!
-
 
 - TODO
 - Added paint mat 
-- Add twist animations
 - Add headlights?
 - Add weapon attach points
 - ? What are vfxTransforms used for?
