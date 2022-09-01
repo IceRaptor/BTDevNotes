@@ -338,8 +338,6 @@ There may be positioning issues with the model. If so, adjust the `_cu` transfor
 
 __Step 6: Dynamic Hardpoints__
 
-(!) CAUTION: This is currently speculative, I've not done an actual import with these yet. IMPORTER BEWARE
-
 HBS expects models to have different models it can map onto the a weapon slot. This process maps a prefab onto a hardpoint id, using some magic in the name of the prefab. For instance, `chrPrfWeap_cugunslinger_leftarm_gauss_bh1` tells the game engine that it's a ballistic (`_b`) in hardpoint 1 (`h1`), it looks like a gauss (`_gauss`) and it's in the left arm (`_leftarm`).
 
 The different weapon types are:
@@ -361,28 +359,43 @@ The model types that are exposed are:
 * TODO
 
 Inside the UnityEditor, create a new GameObject in the hierarchy window. It's name must start with `chrprfweap` (case matters!) and reflect the location, type, and hardpoint type. For a left-torso laser hardpoint, we'd use `chrprfweap_cuYOURMECH_lefttorso_laser_eh1`. This GameObject's transform **MUST be zeroed** at all times, and you shouldn't change this.
+  
+Inside this parent, create a new GameObject called 'body'. Below this create two child GameObjects named 'visuals' and 'fire'. Under 'fire' create an empty GameObject called 'fire1'. This should give you a structure like:
 
-Inside this parent, create a new GameObject called 'body'. You'll use this object to make all your transformations of the position, scale, or rotation. Next, drag your mesh under 'body' to create a new child GameObject. Add the SkinnedMeshRenderer component to the child, but DO NOT associate it with a root bone. 
+* `chrprfweap_cuYOURMECH_lefttorso_laser_eh` / body / visuals
+* `chrprfweap_cuYOURMECH_lefttorso_laser_eh` / body / fire / fire1
 
-To adjust the position of the mesh, you will adjust the transform on the `body` element. It's not special, and you can technically go without it and adjust the transform on the GO with the SkinnedMeshRenderer. I prefer to keep them separate though.
+Drag your mesh under 'body' to create a new child GameObject. Add the SkinnedMeshRenderer component to the child, but DO NOT associate it with a root bone. 
 
-Now we'll create the GameObject you'll use to position the weapon. Copy your chrprfweap GO into the location that will mount the weapon. Here's the breakdown of locations by bind-bone:
+To adjust the position of the weapon mesh, you will ONLY adjust the transform on the 'body' GO. It's not special, and you can technically go without it and adjust the transform on the GO via the SkinnedMeshRenderer transform values. I prefer to keep all transform changes on 'body' because these will propagate through to the 'fire' children as well. We'll talk about those in a bit.
+
+Copy your chrprfweap GO into the location that will mount the weapon. Here's the breakdown of locations by bind-bone:
 
 * `j_Root/j_Pelvis/j_Pitch/j_Spine/j_Spine1/j_Spine2/j_COCKPIT` - used for left, right, centre torso and head weapons 
 * `j_Root/j_Pelvis/j_Pitch/j_Spine/j_Spine1/j_Spine2/j_LClavicle/j_LUpperArm/j_LForearm` - used for arm weapons
 * `j_Root/j_Pelvis/j_LHip/j_LThigh/j_LCalf/`- used for leg weapons
 
-**DO NOT** use the `_cu` GameObjects that you created for your parts as the parents for your weapons. Your weapons are always lashed up to the parent skeleton, not your derived parts. 
+**DO NOT** use the `_cu` GameObjects that you created for your parts as the parents for your weapons. Your weapons are always lashed up to the **parent** skeleton, not your derived parts. 
 
-Once you have the new chrprfweap, align the weapon using the `body` transform. For arm weapons you may find the donor model as the forearms rotated at random degrees. Do you best to align them now, but it's trivial to correct the alignment with BTDebug later. Once the `body` transform for a weapon what you want it to be, copy the transform component (click the cog icon, then choose Copy Component). Then go back to the original `chrprfweap_cuYOURMECH_lefttorso_laser_eh1` at the top level, and copy those values onto it's `body` element (click the cog icon, then Paste Component Values).   
+Once you have the new chrprfweap under the appropriate attach point, align the weapon to the mesh using the `body` transform. For arm weapons you may find the donor model as the forearms rotated at random degrees. Do you best to align them now, but it's trivial to correct the alignment with BTDebug later. Once the `body` transform for a weapon what you want it to be, copy the transform component (click the cog icon, then choose Copy Component). Then go back to the original `chrprfweap_cuYOURMECH_lefttorso_laser_eh1` at the top level, and copy those values onto it's `body` element (click the cog icon, then Paste Component Values).   
+
+__Step 6a: Emitter Game Objects__
+
+The 'fireX' Game Objects allow you to specify the emitter point for weapon projectiles. This is where the beam will start for lasers, the bullet will start for autocannons, etc. You typically want one per barrel or slot on the weapon. An SRM6 with 6 barrels would have 'fire1', 'fire2', 'fire3', 'fire4', 'fire5', 'fire6' below 'fire'. A MLAS with 1 barrel would have a single 'fire1' defined. 
+
+It's worth noting it's completely up to you how many emitter points there are. My understanding is that multi-shot weapons will iterate through defined emitter points, and cycle back to the first emitter point when they run out of emitters. If you wanted to model a LRM20 with 5 barrels, you would have 'fire1', 'fire2', 'fire3', 'fire4', 'fire5' GOs. You'd get 4 missiles out of each barrel, following the sequence fire1, fire2, fire3, fire4, fire5, fire1, fire2, ...
+
+If you don't specify a fire GO, the emission will be from the chrprfweap_ transform.
+
+__Step 6b: Bundling Prefabs with Asset Bundle__
   
-If you have done this correctly, the transform on `chrprfweap_cuYOURMECH_lefttorso_laser_eh1` should be 0,0,0 for position and rotation, and scale of 1. The `body` child has the same values on the top-level and your embedded chrprfweap GOs. Now, copy your top-level chrprfweap prefab into the project window, under the path assets/character/mech/prefabs/. 
+If you have done this correctly, the transform on `chrprfweap_cuYOURMECH_lefttorso_laser_eh1` should be 0,0,0 for position and rotation, and scale of 1. The `body` child has the same values on the top-level and your embedded chrprfweap GOs. Now, copy your top-level chrprfweap prefab into the project window, under the path assets/character/mech/prefabs/. You have to do this one at a time, and it's extremely annoying.
 
 I prefer to use a directory to hold all my assets for a model, so my path for the Rifleman3 was assets/character/mech/prefabs/rifleman3. You just need to remember this later when the hardpoints are being defined.
 
-Next, associate the chrprfweap prefab with the parent model's assetbundle. Click the prefab and in the bottom right window, choose the mech's assetbundle. For my rifleman3, this meant `chrprfweap_curifleman3_leftarm_ac2_bh1` was embedded in AssetBundle `chrprfmech_curifleman3base-001`. Now, build your assetbundle and wait for Unit to do it's thing.
+Next, associate the chrprfweap prefab with the parent model's assetbundle. Click the prefab and in the bottom right window, choose the mech's assetbundle. For my rifleman3, this meant `chrprfweap_curifleman3_leftarm_ac2_bh1` was embedded in AssetBundle `chrprfmech_curifleman3base-001`. Now, build your assetbundle and wait for Unity to do it's thing.
 
-** Hardpoints and Prefab Loading**
+__Step 6c: Hardpoints and Prefab Loading__
 
 Go into the CAB-CU `mod.json` and add import statements for your weapon prefabs. Under your assetbundle, you'll need to add one line for each chrprfweap that you have built into the assetbundle, like so:
 
@@ -401,17 +414,17 @@ Under the `CustomHardpoints` block, you need to add (yet again) add every chrprf
   
 ```
     "prefabs": [
-		{"prefab": "chrprfweap_curifleman3_leftarm_gauss_bh1", "attachType": "Body", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [  ] },
-		{"prefab": "chrprfweap_curifleman3_leftarm_ac20_bh1", "attachType": "Body", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [  ] },
-		{"prefab": "chrprfweap_curifleman3_leftarm_ac10_bh1", "attachType": "Body", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [  ] },  
+		{"prefab": "chrprfweap_curifleman3_leftarm_gauss_bh1", "attachType": "Body", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [ "fire1" ] },
+		{"prefab": "chrprfweap_curifleman3_leftarm_ac20_bh1", "attachType": "Body", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [ "fire1" ] },
+		{"prefab": "chrprfweap_curifleman3_leftarm_ac10_bh1", "attachType": "Body", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [ "fire1" ] },  
 ```
 
 You can do A LOT with this, but the above is your basic binding. It will load the prefab, attaches to the body of the model, use a generic shader, and has no specific emitters. 
 
-Emitters are GameObjects that are used as the origin for projectiles. If you omit them, the projectiles issue from the attach point of the weapon mesh (I think). If you want to go the extra mile and define then, add a body/fire game object, and define one or more emitters under this hierarchy. The emitter GameObject should have it's transform at the position you want the projectile to originate from. As an example, I have `chrprfweap_kamakiri_left_tbolt/body/fire/fire1` and `chrprfweap_kamakiri_left_tbolt/body/fire/fire2` defined. Fire1 and fire2 both have transforms at the end of the Thunderbolt launcher where I want the missile to originate from. The hardpoint def for the Kamakiri then has:
+If created multiple emitters above, make sure to include each of the GOs under the 'fire' GO here. So for a lrm5 prefab you'd have:
 
 ```
-      { "prefab": "chrprfweap_kamakiri_left_tbolt", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [ "fire1", "fire2" ] },
+	{ "prefab": "chrprfweap_horskr_center_lrm5_mh4", "shaderSrc": "chrPrfWeap_atlas_centertorso_laser_eh1", "emitters": [ "fire_1", "fire_2", "fire_3", "fire_4", "fire_5" ] }
 ```
 
 Which associates the GameObjects with the prefab.
@@ -446,10 +459,23 @@ Within game, if a weapon is misaligned simply open BTDebug and navigate to the m
 
 #### Common Mistakes
 
-* Model throwing an NRE that you can't figure out? Did you make sure to add a camoholder object, with 6 patterns? They can all be the same, but it needs to be present.
+* Model throwing an NRE that you can't figure out? 
+** Did you make sure to add a camoholder object, with 6 patterns? They can all be the same, but it needs to be present.
+** When you copied your meshes from _whole to _dmg, did they end up with a (1) in the name? This will cause the NRE. You need to rename them without the parenthesis to work properly.
 * Material not loading? Make sure you name it CUMODELNAMEbase and CUMODELNAMEweapons. For the `chrprfmech_curifleman3base-001` assetbundle, that means the names must be `curifleman3base` and `curifleman3weapons`. Camos are just `curifleman3_camo0`.
 * Model not loading, but no NRES? Make sure your donor j_Root is under bones/. CU will look to match using the /bones object, so leaving it out will cause subtle weird errors.
 * Top level under your assetbundle (i.e. `chrprfmech_curifleman3base-001`) needs to be bones/, mesh/, and camoholder. 
+
+#### MISC NOTES
+Weapon prefabs in simgame may be getting camo patterns / multiple mats? Resetting mat directly fixes the corruption
+- Using the same mesh name as a native prefab causes it to go crazy
+- Direct import from blender doesn't see to work for legs; complains about missing bones. May be the missing avatar? Whereas Transient's imports has an avatar associated with the meshes...
+- Had to import from Transient's import, then MUST use bones & meshes that exactly match
+  - You MUST manually reset each bind point (it links back to the copied prefab)
+- position body using j_QuadBody orientation; cannot change it during game via BTDebug
+- hardpointdatadef MUST include a hardpointdata section for any mounted location; otherwise CU skips it. They should be empty, but must be present
+- Need to test blender direct import for quad legs; will just a vertex weight against skele give enough of a link for CU? The standard process links via mesh painting, with FBX importer plugin will blender work?
+- DO NOT FUCKING COPY j_root/ and mesh DIRECTLY. CLONE THE IMPORT (chrprfmech_battlemasterBase-001) AND RENAME IT. FUCK.
 
 ## Legacy Workflow 
 
@@ -543,6 +569,7 @@ Notes:
 
 - For mechbay, aligning pivot to joint and then rotating the pivot seems to work fine.
 - This doesn't seem to work as nicely in combat, where the objects tend to get shifted. 
+
 - Mechbay seems to ONLY care about alignment? HOW?
 
 - Torso weapons mount to j_COCKPIT
