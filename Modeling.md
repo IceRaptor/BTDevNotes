@@ -78,6 +78,10 @@ BD
 * https://www.sarna.net/wiki/Stygian
 * https://www.sarna.net/wiki/LB-X_Carrier
 * https://www.sarna.net/wiki/%C5%9Eoarece_Superheavy_MBT
+* UFO Urbie
+* Buster Industrial Mech
+* Flashman (partial)
+* Ceasar (partial)
 
 
 Haree:
