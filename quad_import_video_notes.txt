@@ -1,0 +1,47 @@
+- Scene shown has wepaon prefabs as 'quad_LOC_turret_wep_idx'
+- structure appears to be:
+  - bargest_turret/base/rotate
+  - bargbody/rotate/CT_LT_RT_plus_damage_models/
+- He adds cylinders bargbody/rotate/cylinder and makes sure the model can rotate around them
+  - this one is set fo rthe rear legs?
+- he does the same for the front_legs_attach
+- texture is named <model>body (jgoliathbody)
+- uses centre_torso and centre_torso_damaged as names
+-  damaged texture is <model>body_damaged
+- positions the _vfx_transform objects appropriately
+- positions jumpjet points
+- positions turret model under attach point, sizes the turret_attach_hardpoint
+  - names it <model>_turret
+- Places turret model under jgoliathbody/rotate/turret_attach/jgoliath_turret/base/rotate/turret/jvboliath_turret_no_barrer
+- Creates a cylinder to align the turr et aix, under jgoliah_turret/base/rotate/cylinder
+- turret gets body texture
+- creates animator at CT_LT_RT_plus_damage_models/
+  - supports damage_idle, damage_lt, damage_rt - shows the _damaged GO, hides the regular
+  - turret_left_idle, turret_right_idle - needs to support to_fire_normal, recoil, indirect params
+- exports to prefabs for jgoliath_turret, jgoliathbody
+- legs ataches are defined in the chassisdef under CustomParts
+  - quadVisualInfo: FLegsPrefab / FLegsPrefabBase / RLegsPrefabBase
+  - CustomParts: distance length is the delta of front_legs_attach from rear_legs_attach
+  - prefab: is the name of the prefab from Unity (jgoliathbody)
+  - materialInfo: should have all mats used in the parts
+  - AnimationData: DamageAnimator links to the GO in unity where the animations are linked
+  - have one section for prefab: jgolith and a second for prefab: jgoliath_turret
+  - interestingly here; can use multiple mats (as before)
+- chassisdef uses prefabIdentifier of chrprfmech_atlasbase-001 
+- hardpoint
+  - looks identical to regular import process
+- mod.json
+  - imports jgoliath_parts for jgoliath_turret, jgoliathbody prefabs
+  - imports weapon prefsba from jgolaith_parts 
+- edits chassisdef, sets AnimationData:AttachPoints to have CenterTorso location under turret definition
+- in model name will be prefab (atlas as above), can search by body elements though
+
+
+NOTES
+
+- legs prefab looks like it must be based off same parent maybe? 
+- not sure what suppressAllMeshes does
+- all skinnedMeshRenderers need to be under meshes, linked to an arbitrary bone under j_bone
+- note; you'll only have chrprfmech, body and weapon prefabs; turret is under body prefab
+- unity editor will only apply paint to single mat at a time; if a mesh has 2+ mats only the first is 'painted'
+  - this can appear as though parts 'vanish' when SkinnedMeshRenderer is applied

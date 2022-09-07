@@ -78,11 +78,8 @@ BD
 * https://www.sarna.net/wiki/Stygian
 * https://www.sarna.net/wiki/LB-X_Carrier
 * https://www.sarna.net/wiki/%C5%9Eoarece_Superheavy_MBT
-* UFO Urbie
 * Buster Industrial Mech
-* Flashman (partial)
 * Ceasar (partial)
-
 
 Haree:
 * https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
@@ -91,12 +88,10 @@ Haree:
 ME:  
 * Viking Mech - https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png
 
-
 Either the Regulator or the Musketeer would be the preferred one since both have
 
 Interesting VTOLs:  
 
-* https://www.sarna.net/wiki/Kamakiri
 * https://www.sarna.net/wiki/Aeron
 * https://www.sarna.net/wiki/Anhur
 * https://www.sarna.net/wiki/Gossamer
@@ -398,6 +393,7 @@ If you have done this correctly, the transform on `chrprfweap_cuYOURMECH_lefttor
 I prefer to use a directory to hold all my assets for a model, so my path for the Rifleman3 was assets/character/mech/prefabs/rifleman3. You just need to remember this later when the hardpoints are being defined.
 
 Next, associate the chrprfweap prefab with the parent model's assetbundle. Click the prefab and in the bottom right window, choose the mech's assetbundle. For my rifleman3, this meant `chrprfweap_curifleman3_leftarm_ac2_bh1` was embedded in AssetBundle `chrprfmech_curifleman3base-001`. Now, build your assetbundle and wait for Unity to do it's thing.
+
 
 __Step 6c: Hardpoints and Prefab Loading__
 
