@@ -1,109 +1,20 @@
 # BT Developer Notes
 This is my collection of random notes for use when modding the [HBS BattleTech](http://battletechgame.com/) game. I doubt anybody else would find them interesting.
 
-## Random notes
-- CU vehicleDefs will fail if MountedLocation is not specified  
-  
+# Table of Contents
+- [Custom Units Process](#import-cu)
+ 	+ [CU Mech Process](#import-cu-mech)
+	+ [CU VTOL Process](#import-cu-vtol)
+- [UABE Process](#import-uabe)
+	- [UABE Mech Process](#import-uabe-mech)
+	- [UABE Vehicle Process](#import-uabe-vehicle)
+- [Misc Notes](#misc)
+	+ [Misc Modeling](#misc-modeling)
+ 	+ [Misc Texturing](#misc-texturing)
+- [Requests](#requests)
 
-## Modeling
-  
-  * The import model's vertex count needs to be 50k or less. Unity's import will increase the vert count slightly, and any model > 55k gets split by Unity 5 into multiple meshes. BTG doesn't support multiple meshes (for vehicles) so you're stuck with ~ 45-50k.
-  * The Unity scene we have requires Unity 5.5. Don't use Unity 2018.4 (what BTG uses) because the export will break.
-  * The model/mesh is starts with `chrMdlVhcle`. The materials start with `chrMatVhcle`  
-  
-The only real parts you need are the following:  
-* Center Torso => mechname_centre_torso
-* Pelvis => mechname_centre_torso_pelvis
-* Upper arm (left and right) => mechname_left_arm_upperarm, mechname_right_arm_upperarm
-* forearm (left and right) => mechname_left_arm_forearm, mechname_right_arm_forearm
-* thigh (left and right) => mechname_left_leg_thigh, mechname_right_leg_thigh
-* calf (left and right) => mechname_left_leg_calf, mechname_right_leg_calf
-* feet (left and right) => mechname_left_leg_foot, mechname_right_leg_foot
-* cockpit  => mechname_cockpit
 
-I always put a cockpit object in my mechs now, even if it is a invisible object hidden in the torso.  The cockpit saves a ton of headache because your CT will align properly.  Without it you have to do some funky alignment stuff for the CT.
-I almost always merge my RT/LT into the CT.  Hips to the Pelvis and shoulders to the upperarm.
-
-Ctrl+Shift+U to hide / show screen in system
-
-If meshes look shaded for no reason, go to Object Data Properties (triangle) -> Geometry Data -> Clear Custom Split Normals Data. Boxcutter seems bad in particular for adding these which results in shading that doesn't match the geometry. It will appear as shaded flat tris.
-
-## Texturing
-
-Make lenses with no emission, but a paint-dot on their tips with full occlusion for a 'shine'
-
-* Substance doesn't an emissive layer by default; you need to do so yourself
-* Need to set Min/Max occlusion distance to 0.004 / 0.01 in AO bake
-* Need to set color source = Vertex colors in ID bake
-* UV mapping - don't use Smart UV, using 'Box projection', then 'Average Islands' and 'Pack Isalnds'
-
-### Unit color mask
-
-RGB mask, set a black fill as the base so it comes out correctly
-- Primary color is Blue channel
-- Secondary color is Green channel
-- Accent color is Red channel
-  
- 
-== Zhukov def ==
-Vehicles
-
-	"HardpointDataDefID": "hardpointdatadef_shamash",
-	"PrefabIdentifier": "chrprfvhcl_shamash",
-	"PrefabBase": "shamash",
-	
-VTOLS
-
-	"HardpointDataDefID": "hardpointdatadef_rakirov",
-	"PrefabIdentifier": "rakirov_body",
-	"PrefabBase": "rakirov",
-	
-
-# Requests
-
-Carriers in need of true models:
-
-Mixed LRM+Thunderbolt
-There's a rough list of carriers that aren't just missile boxes
-
-https://cfw.sarna.net/wiki/images/7/72/LB-X_Carrier.jpg
-
-Raza: 
-* https://www.sarna.net/wiki/Minion
-* https://www.sarna.net/wiki/Musketeer
-* https://www.sarna.net/wiki/File:Maultier.JPG
-
-BD
-* https://www.sarna.net/wiki/Sturmblitz
-* https://www.sarna.net/wiki/Stygian
-* https://www.sarna.net/wiki/LB-X_Carrier
-* https://www.sarna.net/wiki/%C5%9Eoarece_Superheavy_MBT
-* Buster Industrial Mech
-* Ceasar (partial)
-
-Haree:
-* https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
-* https://www.sarna.net/wiki/Harasser
-
-ME:  
-* Viking Mech - https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png
-
-Either the Regulator or the Musketeer would be the preferred one since both have
-
-Interesting VTOLs:  
-
-* https://www.sarna.net/wiki/Aeron
-* https://www.sarna.net/wiki/Anhur
-* https://www.sarna.net/wiki/Gossamer
-* https://www.sarna.net/wiki/Peacekeeper_(VTOL)
-* 
-* Robotech Beta fighter - https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ad730f9f-28e3-4bef-a04c-6fcc3a4227ba/d6q6jwe-ac16c175-748c-44cc-88f7-fc1064c81c4b.jpg/v1/fill/w_1024,h_579,q_75,strp/shadow_beta_fighter_by_kevarin-d6q6jwe.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl0sIm9iaiI6W1t7InBhdGgiOiIvZi9hZDczMGY5Zi0yOGUzLTRiZWYtYTA0Yy02ZmNjM2E0MjI3YmEvZDZxNmp3ZS1hYzE2YzE3NS03NDhjLTQ0Y2MtODhmNy1mYzEwNjRjODFjNGIuanBnIiwid2lkdGgiOiI8PTEwMjQiLCJoZWlnaHQiOiI8PTU3OSJ9XV19.jaId31uMnJB3DhYnqqptxjCW70zpQEC2X5I1vJHhovg
-
-Project Zhukov - https://drive.google.com/file/d/1nZEhDHVnn-dLR8CmwTFdjsNj4hHu4P_M/view
-
-# Import Workflows
-
-## Custom Units
+# Custom Units Import Process<a name="import-cu"></a>
 
 KMission has created a custom import workflow that is powered by his [CustomUnits](https://github.com/BattletechModders/CustomBundle/tree/master/CustomUnits) package. 
 
@@ -137,7 +48,7 @@ IdleTwistR - float (0-1) used with StartRandomIdle = true
 IdleTwistL - float (0-1) used with StartRandomIdle = true
 you can look at yellowjacket twist animator implementation for inspiration
 
-### CU VTOL Import
+## CU VTOL Import<a name="import-cu-vtol"></a>
 
 - Download workspace from KMission (add link / fix CU)
 - Duplicate model you want to mimic, rename to `chrPrfMech_XXX_vtol`
@@ -158,7 +69,7 @@ you can look at yellowjacket twist animator implementation for inspiration
 - ? What are vfxTransforms used for?
 - Disable animations on death
 
-### CU Mech Import
+## CU Mech Import<a name="import-cu-mech"></a>
 
 The CustomUnits mech import process swaps the Meshes and Materials on a target mech with the Meshes and Materials supplied in the CU mech asset bundle. This happens at runtime, and as far as the game is concerned what's spawned and active is the donor mech, not a CU mech. This differs from the legacy process, where you parasitically replace elements of the donor assetbundle, resulting in a completely new asset. Instead, you are spawning a parent, tearing off and replacing its skin, and letting it go from there.
 
@@ -477,7 +388,7 @@ Weapon prefabs in simgame may be getting camo patterns / multiple mats? Resettin
 - Need to test blender direct import for quad legs; will just a vertex weight against skele give enough of a link for CU? The standard process links via mesh painting, with FBX importer plugin will blender work?
 - DO NOT FUCKING COPY j_root/ and mesh DIRECTLY. CLONE THE IMPORT (chrprfmech_battlemasterBase-001) AND RENAME IT. FUCK.
 
-## Legacy Workflow 
+# UABE Import Process<a name="import-uabe"></a>
 
 Imports are a long, complicated process that is error and frustration prone. Basic vehicles are straightforward and can take between 5-10 hours when you understand the steps. Mechs are significantly more complex and typically take 30-60 hours to model, texture, and import. The import process is largely the same for both types of units.
 
@@ -502,25 +413,26 @@ Imports are a long, complicated process that is error and frustration prone. Bas
 
 :warning: You MUST use donor bundles from BattleTech version 1.6, not BTG 1.7 or higher. UABE can't export textures on current bundles, and will corrupt them when you make assets. The import project is based on Unity 5.6.6f2 and breaks when updated to 2018.4.X.
 
-
-
 *Miscellaneous Best Practices*
 
 * Avoid name collisions at all costs. Use your avatar initials if there is a potential for a conflict, like `irscorpion` instead of 'scorpion'
 * You should always lowercase the name. Use `chrprfvhcl_irscorpion` not `ChrPrfVhcl_IRScorpion`. 
 
-### Mech Import
+## UABE Mech Import<a name="import-uabe-mech"></a>
+
+UABE mech imports are heavily constrained by the donor Mech's specifics. Dynamic weapons are limited to the assetbundles defined in a location, both type and quantity. If your donor only has 3 missile mounts in the left torso, you can only support 3 of your own missile bundles. Bundles can be renamed, so those 3 missile bundles can repurposed to laser bundles. But the main theme is you're making due with what the donor has, not adding new functionality like in CU.
 
 Notes:
 
-- Weapons get only textures, no masks
-- Mechs gets 6 masks
-- You need to blank any parts you're not using, using a tiny mesh
+- UABE imports split between mechs and weapons. Both go into the same assetbundle, as different prefabs.
+- Mechs get textures (albedo, ambient occlusion, metallic, normals, emissive). They also have 6 RBG masks representing the paint schemes.
+- Weapons only have the base textures, no masks. 
+- Any part from the donor you don't want to show, you "blank". Blank means replacing it with a very tiny part that's technically in scene, but invisible to the player.
 - hardpoints
   - make sure to rename any you swap
   - make sure you replace the equivalent weapon
 - make sure to include a cockpit, hidden in CT. Prevents combat drop alignment issues
-  
+
 - Armature tab on export; enable ''only deform bones', disable 'add leaf bones'
 - Apply armature modifier to all parts?
 - Apply rest pose to animation before export/
@@ -593,16 +505,16 @@ The ST missile boxes/blanks are also off center visibly. No one commented on eit
 
 
 
-### Standard Vehicle Import 
+## UABE Vehicle Import<a name="import-uabe-vehicle"></a>
 
-Largely from Transient and Shade. DOES NOT COVER VTOLS
+The UABE vehicle import works for vehicles, turrets, and aerospace fighters. It doesn't support animations (except from the donor) and doesn't (easily) support dynamic weapons. You'll be importing a single model with fixated weapons that won't change no matter what goes into the vehicledef.
 	
-#### Common Setup
+### Common Setup
 
 1. Extract APC bundle to path on disk. In UABE, uncompress the bundle. Then Export to save as .assets
 2. Download [UABE](https://github.com/DerPopo/UABE/releases)
 
-#### Blender or Equivalent
+### Blender or Equivalent
 
 1. Create model (see limitations above)
 	1. You want a single model in Blender; BTG doesn't support importing multiples
@@ -751,7 +663,6 @@ Download via Unity Hub [https://store.unity.com/download-nuo]
             ]
         }
     ]
-
 }
 ```
 
@@ -780,3 +691,102 @@ To:
 	"PrefabIdentifier": "chrprfvhcl_mymodel",
 	"PrefabBase": "mymodel",
 ```
+
+
+# Miscellaneous Notes<a name="misc"></a>
+
+- CU vehicleDefs will fail if MountedLocation is not specified  
+  
+
+## Modeling<a name="misc-modeling"></a>
+  
+  * The import model's vertex count needs to be 50k or less. Unity's import will increase the vert count slightly, and any model > 55k gets split by Unity 5 into multiple meshes. BTG doesn't support multiple meshes (for vehicles) so you're stuck with ~ 45-50k.
+  * The Unity scene we have requires Unity 5.5. Don't use Unity 2018.4 (what BTG uses) because the export will break.
+  * The model/mesh is starts with `chrMdlVhcle`. The materials start with `chrMatVhcle`  
+  
+The only real parts you need are the following:  
+* Center Torso => mechname_centre_torso
+* Pelvis => mechname_centre_torso_pelvis
+* Upper arm (left and right) => mechname_left_arm_upperarm, mechname_right_arm_upperarm
+* forearm (left and right) => mechname_left_arm_forearm, mechname_right_arm_forearm
+* thigh (left and right) => mechname_left_leg_thigh, mechname_right_leg_thigh
+* calf (left and right) => mechname_left_leg_calf, mechname_right_leg_calf
+* feet (left and right) => mechname_left_leg_foot, mechname_right_leg_foot
+* cockpit  => mechname_cockpit
+
+I always put a cockpit object in my mechs now, even if it is a invisible object hidden in the torso.  The cockpit saves a ton of headache because your CT will align properly.  Without it you have to do some funky alignment stuff for the CT.
+I almost always merge my RT/LT into the CT.  Hips to the Pelvis and shoulders to the upperarm.
+
+Ctrl+Shift+U to hide / show screen in system
+
+If meshes look shaded for no reason, go to Object Data Properties (triangle) -> Geometry Data -> Clear Custom Split Normals Data. Boxcutter seems bad in particular for adding these which results in shading that doesn't match the geometry. It will appear as shaded flat tris.
+
+## Texturing<a name="misc-texturing"></a>
+
+Make lenses with no emission, but a paint-dot on their tips with full occlusion for a 'shine'
+
+* Substance doesn't an emissive layer by default; you need to do so yourself
+* Need to set Min/Max occlusion distance to 0.004 / 0.01 in AO bake
+* Need to set color source = Vertex colors in ID bake
+* UV mapping - don't use Smart UV, using 'Box projection', then 'Average Islands' and 'Pack Isalnds'
+
+### Unit color mask
+
+RGB mask, set a black fill as the base so it comes out correctly
+- Primary color is Blue channel
+- Secondary color is Green channel
+- Accent color is Red channel
+  
+ 
+== Zhukov def ==
+Vehicles
+
+	"HardpointDataDefID": "hardpointdatadef_shamash",
+	"PrefabIdentifier": "chrprfvhcl_shamash",
+	"PrefabBase": "shamash",
+	
+VTOLS
+
+	"HardpointDataDefID": "hardpointdatadef_rakirov",
+	"PrefabIdentifier": "rakirov_body",
+	"PrefabBase": "rakirov",
+
+# Requests<a name="requests"></a>
+
+Requests for imports that are still outstanding.
+
+- Carriers in need of true models:
+  	- Mixed LRM+Thunderbolt
+	- There's a rough list of carriers that aren't just missile boxes
+
+Raza: 
+* https://www.sarna.net/wiki/Minion
+* https://www.sarna.net/wiki/Musketeer
+* https://www.sarna.net/wiki/Maultier
+
+BD
+* https://www.sarna.net/wiki/Sturmblitz
+* https://www.sarna.net/wiki/Stygian
+* https://www.sarna.net/wiki/LB-X_Carrier
+* https://www.sarna.net/wiki/%C5%9Eoarece_Superheavy_MBT
+* https://www.sarna.net/wiki/Buster
+* https://www.sarna.net/wiki/Caesar
+
+Haree:
+* https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
+* https://www.sarna.net/wiki/Harasser
+
+ME:
+* [Viking Mech](https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png)
+
+Either the Regulator or the Musketeer would be the preferred one since both have
+
+Interesting VTOLs:  
+
+* https://www.sarna.net/wiki/Aeron
+* https://www.sarna.net/wiki/Anhur
+* https://www.sarna.net/wiki/Gossamer
+* https://www.sarna.net/wiki/Peacekeeper_(VTOL)
+ 
+## Sources
+- [Project Zhukov](https://drive.google.com/file/d/1nZEhDHVnn-dLR8CmwTFdjsNj4hHu4P_M/view)
