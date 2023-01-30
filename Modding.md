@@ -1,9 +1,135 @@
 To Investigate
-* Use new CSProj format - https://caraulean.com/2018/migrating-to-new-csproj-format/. Mentioned by CptMoore.
 
-Modding Concepts
+# Modding Concepts
 
-### New Salvage Model
+```"testToolsEnabled": true,``` in settings.json to enable the debug console
+
+## Updating Mods
+
+Use new CSProj format mentioned by CptMoore.
+
+- https://caraulean.com/2018/migrating-to-new-csproj-format/
+- https://github.com/hvanbakel/CsprojToVs2017 (must include `set DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=2` on Win11)
+- https://github.com/dotnet/upgrade-assistant maybe (offical port)
+- https://www.partech.nl/nl/publicaties/2020/11/converting-c-sharp-projects-to-the-new-sdk-format#
+
+Refer to https://github.com/BattletechModders/MechEngineer/blob/master/source/MechEngineer.csproj
+	
+Run conversion tool:
+```
+set DOTNET_ROLL_FORWARD_ON_NO_CANDIDATE_FX=2
+dotnet migrate-2019 wizard MonsterMashup.sln
+```
+
+Add property check to .csproj:
+```
+  <Target Name="ValidateBattleTechGameDir" Condition="'$(BattleTechGameDir)' == '' Or !Exists('$(BattleTechGameDir)')">
+    <Error Text="BattleTechGameDir variable not set properly" />
+  </Target>  
+```
+
+Add propertyDef to .csproj:  
+```
+	<PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\Core\MY_MOD_DIR')">
+		<!-- Modpack -->
+		<DeployedModPath>$(BattleTechGameDir)\Mods\Core\MY_MOD_DIR</DeployedModPath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(DeployedModPath)' == '' And Exists('$(BattleTechGameDir)\Mods\MY_MOD_DIR')">
+		<!-- flat dir -->
+		<DeployedModPath>$(BattleTechGameDir)\Mods\MY_MOD_DIR</DeployedModPath>
+	</PropertyGroup>
+```
+
+
+Add build step:
+```
+	<Target Name="CopyFilesToGame" AfterTargets="CopyFilesToOutputDirectory">
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DeployedModPath)" />
+	</Target>
+```
+
+
+Add AssemblySearchPath element
+```
+    <AssemblySearchPaths>
+      $(ReferencePath);
+      {HintPathFromItem};
+      $(BattleTechGameDir)\BattleTech_Data\Managed
+    </AssemblySearchPaths>
+```
+
+Add BepInEx
+```
+  <ItemGroup>
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.0" />
+  </ItemGroup>
+```
+
+
+Add System and System.core references:
+```
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>	
+    <Reference Include="System.Core">
+      <Private>False</Private>
+    </Reference>
+```
+
+Mark references as non-private (prevents copying to output)
+
+## How to build custom UI
+
+Yeah, Landfall mod
+So I discovered a trick which I don't think many people know about
+I tried to share it around but it's fiddly so not many people listened I think
+You can build UI in the Unity Editor along with anything that fits into an asset bundle (c# scripts don't go in bundles) - then get it into the game
+when it comes to scripts attached to the UI elements - this is where the trick comes in to maintain the link
+otherwise the script links get broken
+BTDebug did this too
+let me show you
+so for a mod I created three projects
+[1] BTDebug (the BT mod) - https://github.com/CWolfs/BTDebug
+
+[2] BTDebug-Library - the pure c# project that contains c# scripts linking against the Unity dlls required in the scripts for the UI prefabs - https://github.com/CWolfs/BTDebug-Library
+
+[3] BTDebug-Bundler - the Unity project where I create my asset bundles, including UI prefabs. https://github.com/CWolfs/BTDebug-Bundler
+
+
+so...
+what you do is... developing it in parallel - you create the prefabs you want to use in UnityEditor and any logic scripts (c#) need to be created in the Library project
+you compile that library project out to a dll then add it to the Bundler project any time you want to update your scripts
+then in the Unity project - you can use those scripts (being linked to your library dll) on the prefabs
+When you're ready, you put your UI prefabs (or any other prefabs) into the asset bundle and export it
+in your BT mod - you ensure your library dll is loaded in first, you then load your Unity asset bundle - and the script links are maintained
+This is because Unity links the script references by a fully qualified domain
+
+so... while Asset Bundles don't allow scripts to be exported in them
+you can effectively side load it through
+... I hope that makes sense
+took a long time to discover that by trial and error :smile:
+so in your BT mod - you then can use (psuedo code) bundle.LoadAsset("myPrefab", typeof<GameObject>) and there it is
+you can then init the prefab in game
+Landfall mod used the same trick
+You can bring in new Scenes, Textures, Models - anything
+and the associated scripts
+
+
+CWolf — 03/18/2021
+https://github.com/CWolfs/BTDebug/blob/master/src/Main.cs#L28
+
+here's how I load the dll and bundle in - at the start of the mod load then
+just as a fyi
+both the 'LoadAssembly' and 'LoadAssetBundles' methods are called in the mod Init
+...
+I probably don't need to mention it but just in case - the Unity version of your Bundler project should be the same as BT
+Asset bundles are pretty sensitive to version upgrades
+
+
+
+# Ideas
+
+## New Salvage Model
 FrostRaptor — Today at 1:07 PM
 @Interactive Rubber Dolphin what did you mean by?
 The proper full mech salvage is one of the white whales of modding tbh
@@ -112,50 +238,4 @@ FrostRaptor — Today at 1:22 PM
 Very interesting.
 
   
-## How to build custom UI
-
-Yeah, Landfall mod
-So I discovered a trick which I don't think many people know about
-I tried to share it around but it's fiddly so not many people listened I think
-You can build UI in the Unity Editor along with anything that fits into an asset bundle (c# scripts don't go in bundles) - then get it into the game
-when it comes to scripts attached to the UI elements - this is where the trick comes in to maintain the link
-otherwise the script links get broken
-BTDebug did this too
-let me show you
-so for a mod I created three projects
-[1] BTDebug (the BT mod) - https://github.com/CWolfs/BTDebug
-
-[2] BTDebug-Library - the pure c# project that contains c# scripts linking against the Unity dlls required in the scripts for the UI prefabs - https://github.com/CWolfs/BTDebug-Library
-
-[3] BTDebug-Bundler - the Unity project where I create my asset bundles, including UI prefabs. https://github.com/CWolfs/BTDebug-Bundler
-
-
-so...
-what you do is... developing it in parallel - you create the prefabs you want to use in UnityEditor and any logic scripts (c#) need to be created in the Library project
-you compile that library project out to a dll then add it to the Bundler project any time you want to update your scripts
-then in the Unity project - you can use those scripts (being linked to your library dll) on the prefabs
-When you're ready, you put your UI prefabs (or any other prefabs) into the asset bundle and export it
-in your BT mod - you ensure your library dll is loaded in first, you then load your Unity asset bundle - and the script links are maintained
-This is because Unity links the script references by a fully qualified domain
-
-so... while Asset Bundles don't allow scripts to be exported in them
-you can effectively side load it through
-... I hope that makes sense
-took a long time to discover that by trial and error :smile:
-so in your BT mod - you then can use (psuedo code) bundle.LoadAsset("myPrefab", typeof<GameObject>) and there it is
-you can then init the prefab in game
-Landfall mod used the same trick
-You can bring in new Scenes, Textures, Models - anything
-and the associated scripts
-
-
-CWolf — 03/18/2021
-https://github.com/CWolfs/BTDebug/blob/master/src/Main.cs#L28
-
-here's how I load the dll and bundle in - at the start of the mod load then
-just as a fyi
-both the 'LoadAssembly' and 'LoadAssetBundles' methods are called in the mod Init
-...
-I probably don't need to mention it but just in case - the Unity version of your Bundler project should be the same as BT
-Asset bundles are pretty sensitive to version upgrades
 

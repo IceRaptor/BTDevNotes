@@ -4,6 +4,7 @@ This is my collection of random notes for use when modding the [HBS BattleTech](
 # Table of Contents
 - [Custom Units Process](#import-cu)
  	+ [CU Mech Process](#import-cu-mech)
+ 	+ [CU Quad Process](#import-cu-quad)
 	+ [CU VTOL Process](#import-cu-vtol)
 - [UABE Process](#import-uabe)
 	- [UABE Mech Process](#import-uabe-mech)
@@ -48,26 +49,7 @@ IdleTwistR - float (0-1) used with StartRandomIdle = true
 IdleTwistL - float (0-1) used with StartRandomIdle = true
 you can look at yellowjacket twist animator implementation for inspiration
 
-## CU VTOL Import<a name="import-cu-vtol"></a>
 
-- Download workspace from KMission (add link / fix CU)
-- Duplicate model you want to mimic, rename to `chrPrfMech_XXX_vtol`
-- bones/ hierarchy is for attach points, particles, etc. 
-- mesh/ heirarchy is for all mesh objects
-- mesh/XXX_destructable is the 'live' mesh objects
-- mesh/XXX_destroyed is for killed object meshes
-- (VERIFY) Mesh objects need a nomerge and camoholder GO attached to them. Copy from elsewhere
-- When you copy models to mesh/XXX_destructable, need to add `Skinned Mesh Renderer` component. This removes Mesh Renderer
-- SMR `Root Bone` needs to reflect the attach heirarchy under bones/
-- i.e. mesh/strix_destructable/StrixCutUp has a root bone of bones/j_Root/j_Body/normal_h/normal_v/normal/StrixCutUp
-- Rename the bones heirarchy to match new model
-
-- TODO
-- Added paint mat 
-- Add headlights?
-- Add weapon attach points
-- ? What are vfxTransforms used for?
-- Disable animations on death
 
 ## CU Mech Import<a name="import-cu-mech"></a>
 
@@ -387,6 +369,36 @@ Weapon prefabs in simgame may be getting camo patterns / multiple mats? Resettin
 - hardpointdatadef MUST include a hardpointdata section for any mounted location; otherwise CU skips it. They should be empty, but must be present
 - Need to test blender direct import for quad legs; will just a vertex weight against skele give enough of a link for CU? The standard process links via mesh painting, with FBX importer plugin will blender work?
 - DO NOT FUCKING COPY j_root/ and mesh DIRECTLY. CLONE THE IMPORT (chrprfmech_battlemasterBase-001) AND RENAME IT. FUCK.
+
+## CU Quad Import<a name="import-cu-quad"></a>
+
+- each j_FLLeg style node has a 'ScorpionLegSolver' script. This script aligns the j_FLThigh, j_FLCalf, and j_FLFoot nodes with the j_FLFootTarget. 
+- You have to disable the script to edit the positions, then re-enable the script
+- The most important point - the blue arrow (on the transform) points in the direction of the bone. So thigh points up, calf points down, foot points down into ground
+- The j_FLFootTarget has a script 'CustomUnitsGroundLedar' that tries to align the j_FLFoot to the target surface. Disable the leg solver, then move the j_FLFootTarget where you want it. 
+- Once you've moved the j_FLFootTarget, you need to update the walk/run anims to reflect the displacement. The scorp used 6/8 for instance, whereas the Tarantula used 12/14
+- The values in both scripts are output values, not control values. Only the first four values in the Ledar script are controls (keey distance through over ground height) AFAICT
+
+## CU VTOL Import<a name="import-cu-vtol"></a>
+
+- Download workspace from KMission (add link / fix CU)
+- Duplicate model you want to mimic, rename to `chrPrfMech_XXX_vtol`
+- bones/ hierarchy is for attach points, particles, etc. 
+- mesh/ heirarchy is for all mesh objects
+- mesh/XXX_destructable is the 'live' mesh objects
+- mesh/XXX_destroyed is for killed object meshes
+- (VERIFY) Mesh objects need a nomerge and camoholder GO attached to them. Copy from elsewhere
+- When you copy models to mesh/XXX_destructable, need to add `Skinned Mesh Renderer` component. This removes Mesh Renderer
+- SMR `Root Bone` needs to reflect the attach heirarchy under bones/
+- i.e. mesh/strix_destructable/StrixCutUp has a root bone of bones/j_Root/j_Body/normal_h/normal_v/normal/StrixCutUp
+- Rename the bones heirarchy to match new model
+
+- TODO
+- Added paint mat 
+- Add headlights?
+- Add weapon attach points
+- ? What are vfxTransforms used for?
+- Disable animations on death
 
 # UABE Import Process<a name="import-uabe"></a>
 
