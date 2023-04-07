@@ -32,13 +32,17 @@ KMission has created a custom import workflow that is powered by his [CustomUnit
 
 #### Animations
 
-- CU animator will set 'in_battle', 'charge', 'forward' animator properties
+- CU body animator will set 'in_battle', 'charge', 'forward' animator properties
 - Animators have to be defined in json, like "Animators": [ "j_Body","LB","LF","RB","RF" ], 
 - Animators should be attached to objects with distinct names. Don't use `body`!
 - 
 in_battle - boolean
 charge - trigger
 forward - float
+- weapon animations gated by in_battle as well. 
+- weapon anims also support start_random_idle and idle_param. start_random_idle is a bool indicating the unit is in idle state, idle_param is ranges from (0.6-0.9) with 0.6 being a netural value.
+- Layered animators need to be Override with weight 1
+- Twist animations need to not loop
 
 #### Twist Animations
 TwistAnimators - it is different set of animators which can be triggered independently they are triggering next animator values
@@ -358,6 +362,9 @@ Within game, if a weapon is misaligned simply open BTDebug and navigate to the m
 * Material not loading? Make sure you name it CUMODELNAMEbase and CUMODELNAMEweapons. For the `chrprfmech_curifleman3base-001` assetbundle, that means the names must be `curifleman3base` and `curifleman3weapons`. Camos are just `curifleman3_camo0`.
 * Model not loading, but no NRES? Make sure your donor j_Root is under bones/. CU will look to match using the /bones object, so leaving it out will cause subtle weird errors.
 * Top level under your assetbundle (i.e. `chrprfmech_curifleman3base-001`) needs to be bones/, mesh/, and camoholder. 
+* If a mesh element vanishes in the Mechbay when you zoom in, check the bounding box. It's probably not aligned with the mesh, which will cause the game to hide the mesh close-up.
+* If you get mesh tearing, remember you need a 'nomerge' GO under any new meshes you add outside the standard head/torsos/arms/legs
+
 
 #### MISC NOTES
 Weapon prefabs in simgame may be getting camo patterns / multiple mats? Resetting mat directly fixes the corruption
@@ -376,8 +383,13 @@ Weapon prefabs in simgame may be getting camo patterns / multiple mats? Resettin
 - You have to disable the script to edit the positions, then re-enable the script
 - The most important point - the blue arrow (on the transform) points in the direction of the bone. So thigh points up, calf points down, foot points down into ground
 - The j_FLFootTarget has a script 'CustomUnitsGroundLedar' that tries to align the j_FLFoot to the target surface. Disable the leg solver, then move the j_FLFootTarget where you want it. 
+- 'Up Leg Vector' values on CustomUnitsGroundLedar controls the transform displacement during the animation cycle. In particular, changing Y allows you to manipulate how far 'up' the legs will move during the walk cycle
 - Once you've moved the j_FLFootTarget, you need to update the walk/run anims to reflect the displacement. The scorp used 6/8 for instance, whereas the Tarantula used 12/14
 - The values in both scripts are output values, not control values. Only the first four values in the Ledar script are controls (keey distance through over ground height) AFAICT
+- j_BodyTerrainAligner seems to keep the main body aligned with the donor animation skeleton. j_Pelvis is the pelvis from the *donor*, and the transform on j_BodyTerrainAligner is a transform from the donor pelvis position. As with other scripts, disable it, edit the transform, then re-enable. This seems to solve the mechbay verticality issue more cleanly than editing j_pelvis directly.
+- If you unit pitches during battle and doesn't return, it's because you've disabled the CustomUnitsgroundLedars on the Front or Rear Pos of the j_BodyTerrainAligner. My guess is that it's picking up the pitch from the donor pelvis.
+- j_ScorpionBody under j_BodyTerrainAligner determines how far 'up' the unit is in mechbay. 
+- j_ScorpionBody is used in most of my imports because the animation overrides are tied to it. IF YOU CHANGE THE ANIMATIONS, YOU DO SO ON EVERY IMPORT because they are all using the same animator. You need to duplicate / change the animator to resolve this.
 
 ## CU VTOL Import<a name="import-cu-vtol"></a>
 
@@ -399,6 +411,11 @@ Weapon prefabs in simgame may be getting camo patterns / multiple mats? Resettin
 - Add weapon attach points
 - ? What are vfxTransforms used for?
 - Disable animations on death
+
+## CU Misc Notes
+- If a model disappears in the mechlab, make sure the bounding box is set properly. If it's set incorrectly, it will vanish when it goes behind the 'wall'
+- Custom hardpoints are at **WeaponsAttachPoints** not **WeaponAttachPoints** as shown in the various CU bundles. Confirmed on Markolab import
+- Use NestedPrefabs on customrep to define additional prefabs that should be loaded. Use this when you want to reuse weapon prefabs across multiple models. 
 
 # UABE Import Process<a name="import-uabe"></a>
 
@@ -626,7 +643,7 @@ Download via Unity Hub [https://store.unity.com/download-nuo]
 	4. Save as `unity/chrprfvhcl_mymodel_imported_manifest_textured`
 5. Click _Info_
 	1. Click 'Size (Bytes)' to order by largest size
-	2. Select 'chrTxrVhcl_apc' with type 'Mesh'
+	2. Select 'chrMdlVhcl_apc' with type 'Mesh'
 	3. Click _Import Raw_
 	4. Choose unity/parts/<MESH_RANDOM_STRING>
 	5. Click _Ok_
@@ -733,6 +750,10 @@ Ctrl+Shift+U to hide / show screen in system
 
 If meshes look shaded for no reason, go to Object Data Properties (triangle) -> Geometry Data -> Clear Custom Split Normals Data. Boxcutter seems bad in particular for adding these which results in shading that doesn't match the geometry. It will appear as shaded flat tris.
 
+### Blender FBX Export
+Blender's native FBX export is... lacking. [Better FBX Export](https://blendermarket.com/products/better-fbx-importer--exporter) exports native to Unity better, and supports ASCII as well as binary. (Blender dropped ASCII in version 2.6)
+
+
 ## Texturing<a name="misc-texturing"></a>
 
 Make lenses with no emission, but a paint-dot on their tips with full occlusion for a 'shine'
@@ -740,7 +761,12 @@ Make lenses with no emission, but a paint-dot on their tips with full occlusion 
 * Substance doesn't an emissive layer by default; you need to do so yourself
 * Need to set Min/Max occlusion distance to 0.004 / 0.01 in AO bake
 * Need to set color source = Vertex colors in ID bake
-* UV mapping - don't use Smart UV, using 'Box projection', then 'Average Islands' and 'Pack Isalnds'
+* UV mapping - don't use Smart UV, using 'Box projection', then 'Average Islands' and 'Pack Islands'
+
+### Substance Defaults
+- Vehicles bake to a 1K map, mechs to 2k, 4k if you *really* need it
+- Note that larger map sizes take up more and more GPU ram, which causes the pink mechs issue. So try to avoid tons of 4k maps if possible
+- Transient bakes with defaults, except ambient occlusion min: 0.004 and max: 0.01
 
 ### Unit color mask
 
