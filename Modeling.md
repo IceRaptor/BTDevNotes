@@ -814,10 +814,12 @@ Haree:
 * https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
 * https://www.sarna.net/wiki/Harasser
 
+Fuchsy on BTA:
+* Dougram The Nikolaev - https://i.ebayimg.com/images/g/-vMAAOSwbxtgtcv1/s-l500.jpg
+Either the Regulator or the Musketeer would be the preferred one since both have 
+
 ME:
 * [Viking Mech](https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png)
-
-Either the Regulator or the Musketeer would be the preferred one since both have
 
 Interesting VTOLs:  
 

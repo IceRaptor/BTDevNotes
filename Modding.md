@@ -58,12 +58,6 @@ Add AssemblySearchPath element
     </AssemblySearchPaths>
 ```
 
-Add BepInEx
-```
-  <ItemGroup>
-    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.0" />
-  </ItemGroup>
-```
 
 
 Add System and System.core references:
@@ -77,6 +71,27 @@ Add System and System.core references:
 ```
 
 Mark references as non-private (prevents copying to output)
+
+Set LangVersion to 11, use GlobalUsing.cs to consolidate imports (see CleverGirl)
+
+### Publicize access
+Instead of using Traverse and AccessTools, using BepInEx publicized access instead. In project file:
+
+Add BepInEx
+```
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.0">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+```
+
+Make sure your Assembly-CSharp reference is publicized:
+```
+    <Reference Include="Assembly-CSharp" Publicize="true">
+      <Private>False</Private>
+    </Reference>
+```
+
 
 ## How to build custom UI
 
