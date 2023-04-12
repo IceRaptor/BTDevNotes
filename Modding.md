@@ -75,23 +75,19 @@ Mark references as non-private (prevents copying to output)
 Set LangVersion to 11, use GlobalUsing.cs to consolidate imports (see CleverGirl)
 
 ### Publicize access
-Instead of using Traverse and AccessTools, using BepInEx publicized access instead. In project file:
+Instead of using Traverse and AccessTools, using Krafs publicized access instead. In project file:
 
-Add BepInEx
+Add Krafs
 ```
-    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.0">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
+  <PropertyGroup>
+    <!-- avoids IgnoresAccessChecksToAttribute warnings -->
+    <PublicizerRuntimeStrategies>Unsafe</PublicizerRuntimeStrategies>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Publicizer" Version="2.2.1" />
+    <Publicize Include="Assembly-CSharp;UnityEngine.UI" />
+  </ItemGroup>
 ```
-
-Make sure your Assembly-CSharp reference is publicized:
-```
-    <Reference Include="Assembly-CSharp" Publicize="true">
-      <Private>False</Private>
-    </Reference>
-```
-
 
 ## How to build custom UI
 
