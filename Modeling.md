@@ -364,7 +364,7 @@ Within game, if a weapon is misaligned simply open BTDebug and navigate to the m
 * Top level under your assetbundle (i.e. `chrprfmech_curifleman3base-001`) needs to be bones/, mesh/, and camoholder. 
 * If a mesh element vanishes in the Mechbay when you zoom in, check the bounding box. It's probably not aligned with the mesh, which will cause the game to hide the mesh close-up.
 * If you get mesh tearing, remember you need a 'nomerge' GO under any new meshes you add outside the standard head/torsos/arms/legs
-
+* If you get an array index out of bounds error in your hardpoint, make sure the first items in a location is ordered numerically (i.e. mh1, eh2, etc). If you try to add a hardpoint out of numeric order (i.e. mh4 first in lefttorso, then eh1) it will throw this error.
 
 #### MISC NOTES
 Weapon prefabs in simgame may be getting camo patterns / multiple mats? Resetting mat directly fixes the corruption
@@ -817,6 +817,30 @@ Haree:
 Fuchsy on BTA:
 * Dougram The Nikolaev - https://i.ebayimg.com/images/g/-vMAAOSwbxtgtcv1/s-l500.jpg
 Either the Regulator or the Musketeer would be the preferred one since both have 
+
+BTA #TT Channel:
+* Defiance
+* Rabid Coyote
+* Patriot
+* Bowman
+* Blood Kite
+* Rook
+* Prefect
+* Tenshi
+* Verfolger
+* Night Wolf
+* Arctic Fox
+* Beowulf
+* Hachiman_Fire_Support_Tank
+* Sarath quad
+* Jian Che - https://cdn.discordapp.com/attachments/720016022194880602/1098737584995311706/Jian_Che_art.jpg
+* Stooping Hawk - https://cdn.discordapp.com/attachments/720016022194880602/1098737667761512498/Stooping_Hawk.png
+* Predator - https://cdn.discordapp.com/attachments/720016022194880602/1098737675097358396/Predator.png
+* Matador - https://cdn.discordapp.com/attachments/720016022194880602/1098737819150733353/Matador.pngw
+* Icestorm - https://cdn.discordapp.com/attachments/720016022194880602/1098737829946855484/Icestorm.png
+* Red Shift - https://cdn.discordapp.com/attachments/720016022194880602/1098738012512337980/Red_Shift.png
+* Blood Hound - https://cdn.discordapp.com/attachments/720016022194880602/1098738188559847454/Bloodhound.png
+* Eyleuka - https://cdn.discordapp.com/attachments/720016022194880602/1098738608464199680/Eyleuka.png
 
 ME:
 * [Viking Mech](https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png)
