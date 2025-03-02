@@ -9,6 +9,7 @@ This is my collection of random notes for use when modding the [HBS BattleTech](
 - [UABE Process](#import-uabe)
 	- [UABE Mech Process](#import-uabe-mech)
 	- [UABE Vehicle Process](#import-uabe-vehicle)
+- [BTIRS Process](#btirs)
 - [Misc Notes](#misc)
 	+ [Misc Modeling](#misc-modeling)
  	+ [Misc Texturing](#misc-texturing)
@@ -722,10 +723,98 @@ To:
 ```
 
 
+# BTIRS Notes<a name="btirs"></a>
+
+This section deals with imports using 3dsTax's BTIRS tooling, specifically version 003. Other versions may work differently, or have fixed known issues (shown below).  
+
+BTIRS is a standalone application that can export donor AssetBundles, import source GLB meshes, and assemble a target AssetBundle by parasitically replacing donor meshes and information. To get it, contact 3dsTax on the Rougetech Discord. The download will extract into multiple folders:
+  
+  * BTIRS - the application itself. Config data is stored here as well.
+  * GLTF - both exported donor bundles AND source meshes in glTF format. 
+  * Raw - a working directory for the application
+  * Screenshots - as it says
+  * Workspace - output assetbundles will be created here.
+  
+Load the BTIRS/MechEditor.exe application. You'll get a screen with 4 mechbay pads, several options on the left, input fields along the top, and stats on the top right. The most important are the input fields in white, which default to `chrprfmech_battlemasterbase-001`.
+
+From top to bottom, these are:  
+  
+* A source AssetBundle you want to load from the Battletech/Mods directory. This works for both Vanilla and modded assets, so long as moddable assets are loaded by Modtek? Defaults to `chrprfmech_battlemasterbase-001'`. The selected bundle will be loaded into bay #2 (second from left)
+* A source parasite mesh that you want to load from the GLTF directory. Defaults to `../GLTF/chrprfmech_battlemasterbase-001`. The selected mesh is loaded into bay #4 (right-most bay)
+* A MechDef, ChassisDef, UIName, and Variant name to use for the generated assetbundle, hardpointdef, and mod.json.fragment. Defaults to `chrprfmech_battlemasterbase-001`, `battlemaster`, `blr`.
+
+## BTIRS Workflow
+
+Before starting, enable the **glTF 2.0 format** plugin in Blender. You'll need it for all import and export actions from Blender. 
+
+Here's a high level view of the import workflow for just the model meshes. Dynamic weapons are discussed shortly after. Assume we're taking chrprfmech_spiderbase-001 (donor) and creating chrprfmech_stardriveapollobase-001 (target). 
+  
+* BTIRS: Export the donor assetbundle (chrprfmech_spiderbase-001)from BattleTech/Mods using the tool. Change the 'Parts Bundle Name' from `chrprfmech_battlemaserbase-001` to `chrprfmech-spiderbase-001`, and hit 'Load'. Then click 'Export Donor'. This generates a directory and loose files in /GLTF/chrprfmech_spiderbase-001. It should also load the spider into the 2nd slot.
+* BTIRS: Duplicate the generated /GLTF/chrprfmech_spiderbase-001 directory, renaming it to your new asssetbundle (GLTF/chrprfmech_stardriveapollobase-001). Remove the chrprfmech_spiderbase-001.lgb file, and all chrxrMech_* files. We'll add them back later
+* Blender: Create the meshes for stardriveapollo
+* Blender: Create a new collection called Donor. Import /GLTF/chrprfmech_spiderbase-001 using File -> Import -> glTF 2.0 (.glb/.gltf). If the donor doesn't import within the collection, click it, right-click 'Select Hierarchy' then move it into the Donor collection
+* Blender: Expand the donor to find the mesh parent; for us that's chrPrfMech_spiderBase-001(Clone) / mesh. Expand each sub-node and delete the hierarchy of nodes your mesh doesn't include. Few of us include rear meshes or torso meshes, for instance. These will be blanked in the output.
+* Blender: For each mesh you want to replace, go into Edit mode on the donor mesh and delete all the verts. DO NOT delete the object itself. Once the donor verts are deleted, return to object mode. Join your mesh object to the donor object. Then enter edit mode again, and move the mesh verts as you. DO NOT move the object itself, only your mesh!
+* Blender: Once all your meshes are converted, select the donor chrPrfMech, then select it's entire hierarchy. Then File -> Export -> glTF (.glb/.gltf). Export the mesh as your *target assetbundle*, in this case chrprfmech_stardriveapollobase-001.
+* Substance: Export your unit and weapon textures following the HBS format. You'll need `chrTxrMech_stardriveapollobase-*` for the alb, amb, ems, mtls, nrm, v01-msk, v02-msk, v03-msk, v04-msk, v05-msk, and v06-msk. You'll need `chrTxrMech_stardriveapollobase-weapons-*` for the alb, amb, ems, mtls, and nrm. I changed my Substance export fields to use the mesh name, and used 'stardriveapollobase' for the mesh name during texturing.
+* Substance: Copy all the chrTxrMech* textures to GLTF/chrprfmech_stardriveapollobase-001/
+* BTIRS: Assuming you didn't export to the BTIRS directory, copy chrprfmech_stardriveapollobase-001 to GLTF/chrprfmech_stardriveapollobase-001
+* BTIRS: Change the 'View Bundle Name' input to use your new updated bundle path instead of the default. For us, change `../GLTF/chrprfmech_battlemasterbase-001` to `../GLTF/chrprfmech_stardriveapollobase-001`. Then hit 'Load'. Your mesh should load into the 4th slot. It will be using the donor textures, but you can check for positioning errors.
+* BTIRS: Update the 'MechDef', 'ChassiDef', and 'UIName' fields with your target values. Then hit 'Create'. This will take 10-30 seconds and create a new timestamped directory in /Workspace that looks something like `/Workspace/stardriveapollo_20250226032227`
+* Copy the *compressed* (.lz4) assetbundle and hardpointdef to the appropriate CAB directory (or you mod directory). Make sure to remove the `_lz4` suffix from the assetbundle. I encourage you to clean the hardpointdatadef to remove unnecessary or unused imports.
+* Copy the contents of the manifestdef.json into the mod.json of your CAB or mod directory. **CRITICALLY IMPORTANT: You MUST lowercase the very first line in the file, for the base prefab. In our case, we MUST change `../mechs/prefabs/chrPrfMech_stardriveapollobase-001.prefab` to `../mechs/prefabs/chrprfmech_stardriveapollobase-001.prefab`. IT WILL NOT LOAD IF YOU SKIP THIS**
+* Launch the game and checkout the model in skirmish. It frequently works on the first try for me.
+
+One of the major benefits of this approach is that once your target assetbundle is in the game directory, you can load it in BTIRS and see it as the game will without loading HBS BT. Simply change the 'Parts Bundle Name' to your target assetbundle and hit 'load'. It should load in place, with it's textures AND weapons and every time it's exactly what I get in game. This cuts down cycle time immensely, especially when dealing with weapon positioning.  
+  
+**WARNING: If you load your target assetbundle, MAKE SURE to re-load your donor bundle before doing 'Create' again. I.e. if you loaded `chrprfmech_stardriveapollobase-001` and found, and error, make sure to load `chrprfmech_spiderbase-001` again before trying to create an updated export!**
+
+### BTIRS Dynamic Weapons
+
+BTIRS allows you to both replace and add new dynamic hardpoints. It does regex matching to find replacements, and is **extremely particular** about naming. That said, the process is fairly straightforward. You can either 1) replace existing weapons on the parent or 2) generate completely new ones.
+
+Before getting into the process, it's important to understand some context. Weapons generally have 4 layers of hierarchy:
+  
+* chrPrfWeap is the top level in the hierarchy. It gets parented to J_COCKPIT, J_LForearm, J_RForearm, J_LTHigh, or J_RThigh. The Origin of the object MUST be the parented object. **CRITICAL INFO: For any objects you manually parent to a donor J_ bone, Blender creates a `Parent Inverse` matrix. We don't want this; make sure to hit Alt+P and choose 'Clear Parent Inverse' for manually parented chrPrfWeap objects. If you don't, your transforms will be all over the place.**
+* chrMdlWeap is the next level in the hierarchy. It must be parented to chrPrfWeap, BUT have its object origin at the world origin (0,0,0). 
+* The mesh is the next level in the hierarchy. It must be parented to the chrMdlWeap, BUT have its object origin at the target bone (J_COCKPIT, J_LForearm, etc).
+* The next level has one or more `_fire` objects representing fire transform positions. The origin of these should b e where you want the fire effect.
+
+Replacing meshes on existing weapons is trivial. As with donor body parts, DO NOT replace the objects. Go into the target weapon mesh and delete the vertices, then join your objects, edit the mesh and move your mesh to where you want it.   
+  
+Once you're done with your weapons, just follow the export process from the point you create the GLB file of your donor hierarchy in Blender. You should be able to see all the weapons overlapping each other in both the GLTF and assetbundle forms.
+
+#### Creating New Weapons
+You can create completely new weapons as well, instead of using just what the donor provides. All you need is the hierarchy described above *with proper origins and parenting*, which works almost every time for me. I've provided a script in RT's #modelling channel which will take a weapon mesh and create the hierarchy for you, as well as associating the mesh with the donor's material for weapons. The things to remember when using it are:  
+  
+* If you create the hierarchy outside the Donor collection, make sure to Select Hierarchy on the created weapon and copy it into the Donor collection first. Parenting across collections works oddly.
+* Once you have the weapon in the Donor collection, ONLY parent the chrPrfWeap object to the target bone, not the entire hierarchy. 
+* After parenting chrPrfWeapon, make sure to remove the parent inverse matrix with Alt+P
+* Validate the origins are correct for each level of the hierarchy. For a torso weapon, the origins should be chrPrfWeap=J_COCKPIT, chrMdlWeap=(0,0,0), mesh=J_COCKPIT
+
+**Note: With the apollo, parenting off the spider ran into a small complication with the left arm. It only had laser_eh2, not laser_eh1. I ended up using the eh2 parent as a target instead of creating a eh1. I think a new eh1 would work here, but I haven't tested it.**
+
+  
+## BTIRS Issues, Bugs, and Limitations
+
+* Issue - Confusing UI: "Parts Bundle Name", "View Bundle Name", "MechDef (.json)", "ChassisDef (.json)", "UIName", and "VariantName" rows in the editor can be changed, but DO NOT do anything. They are just labels. Only fields in white (not grey) are actual fields. 
+* Limitation - Damage Meshes: The exporter doesn't include damage meshes from the donor.  It's unclear if they would be matched if you add them. They won't be present in the GLTF 
+* Limitation - Donor Weapons: Donor weapons aren't stripped during the export process, though they are overwritten. If you replace the meshes, the export gets your new meshes. If you do nothing with them, they are included in the assetbundle. I recommend manually cleaning the hardpointdef and mod.json.fragment to remove anything you don't modders to invoke. 
+* Limitation - Donor Blips: Sensor blips aren't included during the AssetBundle export process. Exports made prior to this being fixed will probably need to be reimported once corrected. 
+* Bug: Export manifest uses wrong case on base prefab (chrPrfMech, etc)
+* Bug: Fire positions may not be matched by regex, resulting in them defaulting to the donor position
+
 # Miscellaneous Notes<a name="misc"></a>
 
-- CU vehicleDefs will fail if MountedLocation is not specified  
-  
+## CustomUnits
+
+*  CU vehicleDefs will fail if MountedLocation is not specified  
+*  CU prefabs cannot be reused across hardpointdefs; each instantiation needs it's own prefab. Tried to use the same prefab across 2 monster turrets, and it caused hardlocks
+
+## Unity Editor
+* The global/local toggle set to local will show the actual transform vectors, instead of the overall unit vector. This is extremely useful when doing hardpoint attaches. Remember that 'forward' for a Vector3 in Unity is the Z-axis (i.e. the blue).
+
+
 
 ## Modeling<a name="misc-modeling"></a>
   
@@ -797,12 +886,16 @@ Requests for imports that are still outstanding.
   	- Mixed LRM+Thunderbolt
 	- There's a rough list of carriers that aren't just missile boxes
 
+KMission
+* https://www.sarna.net/wiki/Gossamer_(Combat_Vehicle)
+
 Raza: 
 * https://www.sarna.net/wiki/Minion
 * https://www.sarna.net/wiki/Musketeer
 * https://www.sarna.net/wiki/Maultier
 
 BD
+* https://www.sarna.net/wiki/Hammerhands
 * https://www.sarna.net/wiki/Sturmblitz
 * https://www.sarna.net/wiki/Stygian
 * https://www.sarna.net/wiki/LB-X_Carrier
@@ -814,20 +907,20 @@ Haree:
 * https://www.sarna.net/wiki/Prowler_(Combat_Vehicle)
 * https://www.sarna.net/wiki/Harasser
 
+Either the Regulator or the Musketeer would be the preferred one since both have 
+
 Fuchsy on BTA:
 * Dougram The Nikolaev - https://i.ebayimg.com/images/g/-vMAAOSwbxtgtcv1/s-l500.jpg
-Either the Regulator or the Musketeer would be the preferred one since both have 
 
 BTA #TT Channel:
 * Defiance
 * Rabid Coyote
-* Patriot
+* Patriot - https://www.sarna.net/wiki/Patriot
 * Bowman
 * Blood Kite
 * Rook
 * Prefect
 * Tenshi
-* Verfolger
 * Night Wolf
 * Arctic Fox
 * Beowulf
@@ -841,16 +934,15 @@ BTA #TT Channel:
 * Red Shift - https://cdn.discordapp.com/attachments/720016022194880602/1098738012512337980/Red_Shift.png
 * Blood Hound - https://cdn.discordapp.com/attachments/720016022194880602/1098738188559847454/Bloodhound.png
 * Eyleuka - https://cdn.discordapp.com/attachments/720016022194880602/1098738608464199680/Eyleuka.png
-
+* https://www.sarna.net/wiki/Ambassador
 ME:
 * [Viking Mech](https://cdn.discordapp.com/attachments/565136849752948736/847916645971263498/saulo-brito-vikingrobot-bg.png)
 
 Interesting VTOLs:  
 
-* https://www.sarna.net/wiki/Aeron
 * https://www.sarna.net/wiki/Anhur
 * https://www.sarna.net/wiki/Gossamer
-* https://www.sarna.net/wiki/Peacekeeper_(VTOL)
+* https://www.sarna.net/wiki/Peacekeeper_(Combat_Vehicle)
  
 ## Sources
 - [Project Zhukov](https://drive.google.com/file/d/1nZEhDHVnn-dLR8CmwTFdjsNj4hHu4P_M/view)
