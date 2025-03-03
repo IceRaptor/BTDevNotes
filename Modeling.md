@@ -755,6 +755,7 @@ Here's a high level view of the import workflow for just the model meshes. Dynam
 * Blender: Create a new collection called Donor. Import /GLTF/chrprfmech_spiderbase-001 using File -> Import -> glTF 2.0 (.glb/.gltf). If the donor doesn't import within the collection, click it, right-click 'Select Hierarchy' then move it into the Donor collection
 * Blender: Expand the donor to find the mesh parent; for us that's chrPrfMech_spiderBase-001(Clone) / mesh. Expand each sub-node and delete the hierarchy of nodes your mesh doesn't include. Few of us include rear meshes or torso meshes, for instance. These will be blanked in the output.
 * Blender: For each mesh you want to replace, go into Edit mode on the donor mesh and delete all the verts. DO NOT delete the object itself. Once the donor verts are deleted, return to object mode. Join your mesh object to the donor object. Then enter edit mode again, and move the mesh verts as you. DO NOT move the object itself, only your mesh!
+* Blender: For each of your meshes, check their Data / Attributes values. Remove any `bevel_*` attributes; these cause the importer to fail.
 * Blender: Once all your meshes are converted, select the donor chrPrfMech, then select it's entire hierarchy. Then File -> Export -> glTF (.glb/.gltf). Export the mesh as your *target assetbundle*, in this case chrprfmech_stardriveapollobase-001.
 * Substance: Export your unit and weapon textures following the HBS format. You'll need `chrTxrMech_stardriveapollobase-*` for the alb, amb, ems, mtls, nrm, v01-msk, v02-msk, v03-msk, v04-msk, v05-msk, and v06-msk. You'll need `chrTxrMech_stardriveapollobase-weapons-*` for the alb, amb, ems, mtls, and nrm. I changed my Substance export fields to use the mesh name, and used 'stardriveapollobase' for the mesh name during texturing.
 * Substance: Copy all the chrTxrMech* textures to GLTF/chrprfmech_stardriveapollobase-001/
@@ -801,6 +802,7 @@ You can create completely new weapons as well, instead of using just what the do
 * Limitation - Damage Meshes: The exporter doesn't include damage meshes from the donor.  It's unclear if they would be matched if you add them. They won't be present in the GLTF 
 * Limitation - Donor Weapons: Donor weapons aren't stripped during the export process, though they are overwritten. If you replace the meshes, the export gets your new meshes. If you do nothing with them, they are included in the assetbundle. I recommend manually cleaning the hardpointdef and mod.json.fragment to remove anything you don't modders to invoke. 
 * Limitation - Donor Blips: Sensor blips aren't included during the AssetBundle export process. Exports made prior to this being fixed will probably need to be reimported once corrected. 
+* Bug: Meshes with any `bevel_weight_*` attributes (in Blender) fail to import.
 * Bug: Export manifest uses wrong case on base prefab (chrPrfMech, etc)
 * Bug: Fire positions may not be matched by regex, resulting in them defaulting to the donor position
 
